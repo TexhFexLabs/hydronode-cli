@@ -1,0 +1,24 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Send one round of values, signed with the sensor secret, exactly like a device.
+The secret comes from HYDRONODE_SENSOR_SECRET, --secret-stdin, or your login (owner).
+
+Usage: hn push [OPTIONS] <SENSOR> <TYPE=VALUE>...
+
+Arguments:
+  <SENSOR>         Sensor id
+  <TYPE=VALUE>...  TYPE=VALUE pairs (1 to 64), for example TEMPERATURE=21.4
+
+Options:
+      --secret-stdin  Read the sensor secret from stdin
+  -h, --help          Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn push <sensor-id> TEMPERATURE=21.4 HUMIDITY=48
+  HYDRONODE_SENSOR_SECRET=… hn push <sensor-id> SOIL_MOISTURE=41

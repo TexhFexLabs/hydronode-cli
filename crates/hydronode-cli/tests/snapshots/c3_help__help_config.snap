@@ -1,0 +1,25 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Settings in config.toml (never secrets). Keys: default-profile.
+
+Usage: hn config [OPTIONS] [COMMAND]
+
+Commands:
+  list  Show all settings
+  get   Show one setting
+  set   Change a setting
+  path  Print where config.toml lives
+
+Options:
+  -h, --help  Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn config
+  hn config set default-profile work
+  hn config path

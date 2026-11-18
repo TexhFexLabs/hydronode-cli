@@ -1,0 +1,25 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Set the value of a writable data point and wait until the device confirms it.
+VALUE: on/off/true/false, a number or text.
+
+Usage: hn set [OPTIONS] <TARGET> <VALUE>
+
+Arguments:
+  <TARGET>  Data point id or SENSOR/TYPE
+  <VALUE>   New value: on, off, true, false, a number or text
+
+Options:
+      --wait <SECONDS>  Seconds to wait for the device to confirm (0 to 20) [default: 10]
+  -h, --help            Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn set <point-id> on
+  hn set <sensor-id>/target_temperature 21.5
+  hn set <point-id> off --wait 0

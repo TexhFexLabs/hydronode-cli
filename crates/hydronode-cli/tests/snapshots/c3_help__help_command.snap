@@ -1,0 +1,26 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Queue a command. The device gets it with its next delivery and confirms or
+declines it. Without --type the type is guessed from the value.
+
+Usage: hn command [OPTIONS] <SENSOR> <NAME> <VALUE>
+
+Arguments:
+  <SENSOR>  Sensor id
+  <NAME>    Command name the device listens to (for example relay1)
+  <VALUE>   Value to send
+
+Options:
+      --type <TYPE>  Value type, guessed when left out [possible values: bool, int32, uint32, int64, uint64, string]
+  -h, --help         Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn command <sensor-id> relay1 true
+  hn command <sensor-id> relay1 1400 --type uint32
+  hn command <sensor-id> mode eco --type string

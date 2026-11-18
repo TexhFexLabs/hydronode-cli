@@ -1,0 +1,31 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Change firmware, send interval, power mode or add the WiFi signal value on one
+or more devices. HydroNode checks every device first; you see what changes and
+confirm. Devices that cannot take the change are skipped.
+
+Usage: hn devices update [OPTIONS] <SENSORS>...
+
+Arguments:
+  <SENSORS>...  Sensor ids (1 to 200)
+
+Options:
+      --firmware <VERSION>   Firmware version or "latest"
+      --interval <SPAN>      Send interval (10s to 7d)
+      --power <POWER>        Power mode [possible values: always-on, modem-sleep, light-sleep, deep-sleep, hibernate]
+      --add-rssi             Also send the WiFi signal (RSSI)
+      --verify <VERIFY>      How the device proves the update worked [possible values: strict, ingest]
+      --confirm-low-battery  Go ahead for devices below 30 % battery too
+  -y, --yes                  Do not ask
+  -h, --help                 Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn devices update <sensor-id> --firmware latest
+  hn devices update <id> <id> --interval 5m
+  hn devices update <sensor-id> --power deep-sleep --yes

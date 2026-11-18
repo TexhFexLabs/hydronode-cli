@@ -1,0 +1,14 @@
+---
+source: crates/hydronode-cli/tests/c4_data.rs
+expression: stdout(&out)
+---
+Devices    9 devices, 6 healthy, 1 delayed, 1 offline, 1 no data
+Anomalies  2 open
+Messages   3 unread
+
+PROJECT  POOL     SENSORS
+Home     Bench A  4
+
+Needs attention
+KIND     SENSOR  DETAIL            ID
+OFFLINE  Tank    Last data 3h ago  550e8400-e29b-41d4-a716-446655440000

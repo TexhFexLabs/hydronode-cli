@@ -1,0 +1,25 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Live values of your devices as they arrive. Full-screen view, q quits.
+--plain prints one line per value instead (good for logs and pipes).
+Needs a browser or device login.
+
+Usage: hn watch [OPTIONS] [SENSORS]...
+
+Arguments:
+  [SENSORS]...  Only these sensors (ids or names), default all
+
+Options:
+      --plain  One line per value instead of the full-screen view
+  -h, --help   Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn watch
+  hn watch <sensor-id> <sensor-id>
+  hn watch --plain | grep TEMPERATURE

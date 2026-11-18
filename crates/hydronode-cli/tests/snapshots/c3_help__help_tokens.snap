@@ -1,0 +1,26 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Personal API tokens: hat_ reads and writes, hrt_ only reads. A new token is
+shown once.
+
+Usage: hn tokens [OPTIONS] [COMMAND]
+
+Commands:
+  list    List your API tokens (never the token itself)
+  create  Create a token and show it once
+  revoke  Revoke a token
+
+Options:
+  -h, --help  Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn tokens
+  hn tokens create "Home Assistant"
+  hn tokens create ci --read
+  hn tokens revoke <id>

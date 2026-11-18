@@ -1,0 +1,12 @@
+---
+source: crates/hydronode-cli/src/watch.rs
+expression: terminal.backend()
+---
+"HydroNode live  3 values from 1 sensors                               "
+"SENSOR                    TYPE                  VALUE         AGE     "
+"Greenhouse climate        HUMIDITY              48            30s     "
+"Greenhouse climate        SWITCH/fan            on            30s     "
+"Greenhouse climate        TEMPERATURE           21.4          30s     "
+"                                                                      "
+"                                                                      "
+"live  q quits                                                         "

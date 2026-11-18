@@ -1,0 +1,26 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Devices you manage: firmware, health, battery, signal and running updates.
+'update' checks first, shows what would change and asks before it starts.
+
+Usage: hn devices [OPTIONS] [COMMAND]
+
+Commands:
+  list    Devices you manage with firmware, health, battery and signal
+  show    Details, error rates and recent jobs of one device
+  update  Update firmware or settings over the air
+
+Options:
+  -h, --help  Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn devices
+  hn devices show <sensor-id>
+  hn devices update <sensor-id> --firmware latest
+  hn devices update <id> <id> --interval 5m --yes

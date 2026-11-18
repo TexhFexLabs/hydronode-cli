@@ -1,0 +1,7 @@
+---
+source: crates/hydronode-cli/tests/c4_data.rs
+expression: stdout(&out)
+---
+AT                SOURCE  OUTCOME   STATUS  MESSAGE
+2026-11-17 11:58  HTTP    ACCEPTED  202     TEMPERATURE 21.4
+2026-11-17 11:59  HTTP    REJECTED  401     Invalid signature

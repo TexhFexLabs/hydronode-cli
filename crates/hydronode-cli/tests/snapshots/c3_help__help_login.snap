@@ -1,0 +1,29 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Sign in to HydroNode. Without a flag you choose how.
+
+--web opens the browser and signs you in like the web app.
+--device shows a code to confirm on another device (SSH, no browser).
+--token / --with-token use an API token: hat_ reads and writes, hrt_ only reads.
+
+Usage: hn login [OPTIONS]
+
+Options:
+      --web         Sign in with the browser (recommended)
+      --device      Show a code to confirm on another device
+      --token       Paste an API token (hidden input)
+      --with-token  Read an API token from stdin
+      --no-browser  Do not open a browser, only print the link
+  -h, --help        Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn login
+  hn login --device
+  echo "$HYDRONODE_TOKEN" | hn login --with-token
+  hn -p work login --web

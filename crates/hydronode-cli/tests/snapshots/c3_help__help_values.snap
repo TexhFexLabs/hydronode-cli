@@ -1,0 +1,34 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Min, max, average, trend and gaps of one data point, in at most 48 steps.
+TARGET is a data point id or SENSOR/TYPE (for example <sensor-id>/temperature).
+
+Usage: hn values [OPTIONS] <TARGET>
+       hn values <COMMAND>
+
+Commands:
+  compare  Up to four data points side by side, or one against an earlier period
+
+Arguments:
+  <TARGET>  Data point id or SENSOR/TYPE
+
+Options:
+      --from <TIME>  Start: 24h, 7d, 90m, 2026-11-01 or 2026-11-01T10:00+01:00 [default: 24h]
+      --to <TIME>    End, same forms as --from [default: now]
+      --raw          Single readings instead of a summary (browser, device or hat_ login)
+      --below <N>    Periods when the value was below N
+      --above <N>    Periods when the value was above N
+  -h, --help         Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn values <sensor-id>/temperature
+  hn values <point-id> --from 7d
+  hn values <sensor-id>/soil_moisture --below 30 --from 30d
+  hn values <point-id> --from 2h --raw
+  hn values compare <point-id> --shift 7d

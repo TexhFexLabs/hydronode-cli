@@ -1,0 +1,22 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Print a completion script for your shell.
+
+Usage: hn completion [OPTIONS] <SHELL>
+
+Arguments:
+  <SHELL>  Shell [possible values: bash, elvish, fish, powershell, zsh]
+
+Options:
+  -h, --help  Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn completion zsh > "${fpath[1]}/_hn"
+  hn completion bash > ~/.local/share/bash-completion/completions/hn
+  hn completion fish > ~/.config/fish/completions/hn.fish

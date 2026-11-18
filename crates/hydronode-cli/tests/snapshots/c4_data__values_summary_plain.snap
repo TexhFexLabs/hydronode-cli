@@ -1,0 +1,12 @@
+---
+source: crates/hydronode-cli/tests/c4_data.rs
+expression: stdout(&out)
+---
+Temperature (Greenhouse climate)  2026-11-16 12:00 → 2026-11-17 12:00, 5m steps
+min       14.2 °C  at 2026-11-17 04:10
+max       29.8 °C  at 2026-11-16 14:05
+avg       21.3 °C
+trend     +0.4 °C per day
+coverage  97 %
+gaps      1
+shape     ▄█▁▅

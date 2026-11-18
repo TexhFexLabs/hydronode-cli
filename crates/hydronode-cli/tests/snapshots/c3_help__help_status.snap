@@ -1,0 +1,19 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+One screen: projects, device health, open anomalies, unread messages and
+what needs attention.
+
+Usage: hn status [OPTIONS]
+
+Options:
+  -h, --help  Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn status
+  hn status --json | jq .devices

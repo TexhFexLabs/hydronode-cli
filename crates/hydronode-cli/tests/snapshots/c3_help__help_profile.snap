@@ -1,0 +1,26 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+A profile is a server plus its own login. Use one with -p NAME.
+
+Usage: hn profile [OPTIONS] [COMMAND]
+
+Commands:
+  list    List profiles and their servers
+  add     Add or change a profile
+  remove  Remove a profile and its stored login
+  use     Use a profile by default
+
+Options:
+  -h, --help  Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn profile add work --server https://hydronode.tech
+  hn -p work login
+  hn profile use work
+  hn profile list

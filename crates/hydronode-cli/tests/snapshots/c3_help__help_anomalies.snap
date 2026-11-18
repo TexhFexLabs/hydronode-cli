@@ -1,0 +1,25 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Anomalies found by the analysis. Open ones by default.
+
+Usage: hn anomalies [OPTIONS] [COMMAND]
+
+Commands:
+  show  One anomaly with explanation and values
+
+Options:
+      --all           Also closed ones
+      --sensor <ID>   Only this sensor
+      --since <TIME>  Only since (7d, 2026-11-01, …)
+  -h, --help          Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn anomalies
+  hn anomalies --all --since 30d
+  hn anomalies show <id>

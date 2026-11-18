@@ -1,0 +1,23 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Delete a sensor with all its readings, anomalies, commands and shares.
+This cannot be undone. Asks first unless --yes is given.
+
+Usage: hn sensors delete [OPTIONS] <SENSOR>
+
+Arguments:
+  <SENSOR>  Sensor id
+
+Options:
+  -y, --yes   Do not ask
+  -h, --help  Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn sensors delete <sensor-id>
+  hn sensors delete <sensor-id> --yes

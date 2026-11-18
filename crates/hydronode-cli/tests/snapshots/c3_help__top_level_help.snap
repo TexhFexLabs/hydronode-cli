@@ -1,0 +1,48 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+HydroNode from your terminal: sensors, values, devices and live data.
+
+Usage: hn [OPTIONS] <COMMAND>
+
+Start:
+  login        Sign in (browser, device code or API token)
+  logout       Sign out and forget the stored login
+  whoami       Show who you are signed in as
+  status       Devices, anomalies and messages at a glance
+
+Data:
+  sensors      List, show, create, rename and delete sensors
+  values       Summaries of a data point over time
+  watch        Live values in the terminal
+  set          Set a writable data point (switch, setpoint)
+  command      Send a command to a device
+  export       Download readings as CSV, JSON or Parquet
+
+Devices:
+  devices      Firmware, health and updates over the air
+  console      What devices sent and why something was rejected
+  push         Send a signed value like a device
+  simulate     Run a fake device that sends signed values
+
+More:
+  anomalies    Open anomalies on your sensors
+  messages     Your inbox
+  stations     Public weather stations
+  automations  List and switch automations
+  tokens       API tokens for scripts and integrations
+  sessions     Where you are signed in
+  api          Send a raw API request
+  config       Show and change settings
+  profile      Servers and accounts (for example a second account)
+  completion   Shell completion script
+  open         Open HydroNode in the browser
+
+Options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+  -h, --help            Print help
+  -V, --version         Print version
+
+Run 'hn help <command>' for details. Docs: https://hydronode.tech/docs/guide/cli

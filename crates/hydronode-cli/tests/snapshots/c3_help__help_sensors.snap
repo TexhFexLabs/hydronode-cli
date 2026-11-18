@@ -1,0 +1,29 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Your sensors and the ones shared with you.
+
+Usage: hn sensors [OPTIONS] [COMMAND]
+
+Commands:
+  list         List your sensors and the ones shared with you
+  show         Data points, status, battery and signal of one sensor
+  create       Create a sensor (HTTP device)
+  rename       Rename a sensor
+  delete       Delete a sensor and all its readings
+  credentials  Show the sensor id and secret for a device (owner only)
+
+Options:
+  -h, --help  Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn sensors
+  hn sensors show <sensor-id>
+  hn sensors create "Balcony" --outdoor
+  hn sensors rename <sensor-id> "Balcony east"
+  hn sensors credentials <sensor-id>

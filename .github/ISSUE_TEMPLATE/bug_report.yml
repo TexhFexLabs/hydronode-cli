@@ -1,0 +1,37 @@
+name: Bug report
+description: Something does not work as described
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: The command you ran and what you saw. Remove tokens, secrets and personal data.
+      render: console
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of `hn --version`
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: System
+      options: [macOS, Linux, Windows]
+    validations:
+      required: true
+  - type: dropdown
+    id: login
+    attributes:
+      label: Login
+      options: [Browser, Device code, Full API token (hat_), Read-only API token (hrt_), Not signed in]

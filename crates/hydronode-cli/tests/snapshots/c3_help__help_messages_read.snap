@@ -1,0 +1,22 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Mark messages as read
+
+Usage: hn messages read [OPTIONS] [IDS]...
+
+Arguments:
+  [IDS]...  Message ids
+
+Options:
+      --all   Every message
+  -h, --help  Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn messages read <id> <id>
+  hn messages read --all

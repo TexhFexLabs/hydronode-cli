@@ -1,0 +1,7 @@
+---
+source: crates/hydronode-cli/tests/c4_data.rs
+expression: stdout(&out)
+---
+ID                                    NAME                ACCESS  STATUS   LAST VALUE        AT
+550e8400-e29b-41d4-a716-446655440000  Greenhouse climate  owner   HEALTHY  temperature 21.4  2026-11-17 11:58
+770e8400-e29b-41d4-a716-446655440000  Tank                read    OFFLINE  -                 -

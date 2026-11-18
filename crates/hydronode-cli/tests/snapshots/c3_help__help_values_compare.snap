@@ -1,0 +1,25 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Compare up to four data points over the same time, or one point with itself
+shifted back (--shift 7d = the same hours a week earlier).
+
+Usage: hn values compare [OPTIONS] <TARGETS>...
+
+Arguments:
+  <TARGETS>...  Data point ids or SENSOR/TYPE (1 to 4)
+
+Options:
+      --from <TIME>   Start: 24h, 7d, 90m, 2026-11-01 or 2026-11-01T10:00+01:00 [default: 24h]
+      --to <TIME>     End, same forms as --from [default: now]
+      --shift <SPAN>  Compare one point with itself this long ago (for example 7d)
+  -h, --help          Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn values compare <point-id> <point-id>
+  hn values compare <sensor-id>/temperature --shift 7d --from 24h

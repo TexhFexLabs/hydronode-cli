@@ -1,0 +1,7 @@
+---
+source: crates/hydronode-cli/tests/c5_devices_live.rs
+expression: stdout(&out)
+---
+DEVICE  CHECK         CHANGES                              NOTES
+Tank A  OK            firmware 0.8.0 → 0.9.0
+Shed    NOT_POSSIBLE  firmware: ESP8266 takes config only  ESP8266 takes config only

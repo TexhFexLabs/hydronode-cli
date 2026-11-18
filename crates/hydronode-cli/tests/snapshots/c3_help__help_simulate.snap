@@ -1,0 +1,27 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+A fake HTTP device that sends plausible values on a schedule. It writes real
+data into the sensor, so use a test sensor. Ctrl-C stops it.
+
+Usage: hn simulate [OPTIONS] <SENSOR>
+
+Arguments:
+  <SENSOR>  Sensor id (use a test sensor)
+
+Options:
+      --kind <KIND>   What the fake device measures [default: weather] [possible values: weather, greenhouse, random]
+      --every <SPAN>  Time between rounds, at least 10s [default: 30s]
+      --count <N>     Stop after this many rounds
+      --secret-stdin  Read the sensor secret from stdin
+  -h, --help          Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn sensors create "Test device"
+  hn simulate <sensor-id> --kind weather
+  hn simulate <sensor-id> --kind greenhouse --every 1m --count 10

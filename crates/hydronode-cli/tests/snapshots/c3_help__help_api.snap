@@ -1,0 +1,26 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Call any HydroNode API path with your login and print the answer.
+METHOD defaults to GET. The path must stay on the profile's server.
+
+Usage: hn api [OPTIONS] <METHOD PATH>...
+
+Arguments:
+  <METHOD PATH>...  [METHOD] PATH, for example GET /api/sensors
+
+Options:
+  -d, --data <JSON>        JSON body (or @file, or - for stdin)
+  -q, --query <KEY=VALUE>  Query parameter key=value (repeat)
+  -h, --help               Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn api /api/agent/v1/me
+  hn api GET /api/fleet/v2/firmware
+  hn api PATCH /api/sensors/<id> -d '{"name":"Tank"}'
+  hn api GET /api/agent/v1/find -q q=greenhouse

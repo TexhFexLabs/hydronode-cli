@@ -1,0 +1,7 @@
+---
+source: crates/hydronode-cli/src/output.rs
+expression: "render_table(&[\"ID\", \"NAME\", \"STATUS\"], &rows, false)"
+---
+ID        NAME                STATUS
+550e8400  Greenhouse climate  HEALTHY
+770e8400  Tank                OFFLINE

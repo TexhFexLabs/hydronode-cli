@@ -1,0 +1,8 @@
+---
+source: crates/hydronode-cli/tests/c4_data.rs
+expression: stdout(&out)
+---
+SERIES                   MIN      AVG      MAX
+Temperature (now)        14.2 °C  21.3 °C  29.8 °C
+Temperature (7d before)  12 °C    19.9 °C  25.1 °C
+Temperature (now) vs Temperature (7d before): avg +1.4 °C, max +4.7 °C

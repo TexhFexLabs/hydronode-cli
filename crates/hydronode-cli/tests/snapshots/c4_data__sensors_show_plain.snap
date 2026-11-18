@@ -1,0 +1,17 @@
+---
+source: crates/hydronode-cli/tests/c4_data.rs
+expression: stdout(&out)
+---
+Greenhouse climate
+ID        550e8400-e29b-41d4-a716-446655440000
+Status    HEALTHY (last data 2m ago)
+Project   Home › Bench A
+Battery   81 % (3.92 V)
+Signal    -67 dBm wifi
+Firmware  hydronode/0.9.0
+
+POINT        TYPE         VALUE    AGE  WRITABLE  ID
+Temperature  TEMPERATURE  21.4 °C  2m   -         660e8400-e29b-41d4-a716-446655440000
+Fan          SWITCH       on       5m   yes       p2
+
+History: hn values 550e8400-e29b-41d4-a716-446655440000/temperature --from 7d. Writable points: hn set 550e8400-e29b-41d4-a716-446655440000/<type> <value>.

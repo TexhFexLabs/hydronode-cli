@@ -1,0 +1,29 @@
+[workspace]
+members = ["cargo:."]
+
+# Config for 'dist'. Releases are built only from a pushed version tag (or by hand);
+# nothing is published until the repository is public.
+[dist]
+cargo-dist-version = "0.34.0"
+ci = "github"
+installers = ["shell", "powershell", "homebrew"]
+targets = [
+    "aarch64-apple-darwin",
+    "x86_64-apple-darwin",
+    "aarch64-unknown-linux-musl",
+    "x86_64-unknown-linux-musl",
+    "x86_64-pc-windows-msvc",
+]
+tap = "TexhFexLabs/homebrew-tap"
+formula = "hydronode"
+publish-jobs = ["homebrew"]
+# SLSA build provenance for every archive (gh attestation verify)
+github-attestations = true
+install-path = "CARGO_HOME"
+install-updater = false
+# no plan runs on pull requests: only tags and manual runs touch the release workflow
+pr-run-mode = "skip"
+dispatch-releases = false
+# The generated release.yml is hand-edited: actions pinned by commit, write rights only where needed.
+# Re-run `dist generate`, then pin again (see docs/RELEASING.md).
+allow-dirty = ["ci"]

@@ -1,0 +1,24 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Open the dashboard, a sensor or another page of the profile's server.
+WHAT: a sensor id, or dashboard, devices, messages, stations, docs.
+
+Usage: hn open [OPTIONS] [WHAT]
+
+Arguments:
+  [WHAT]  Sensor id or page: dashboard, devices, messages, stations, docs
+
+Options:
+      --print  Only print the link
+  -h, --help   Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn open
+  hn open <sensor-id>
+  hn open messages --print

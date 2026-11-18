@@ -1,0 +1,23 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Signed-in browsers, apps and CLIs of your account. Sign one or all others out.
+
+Usage: hn sessions [OPTIONS] [COMMAND]
+
+Commands:
+  list    List where you are signed in
+  revoke  Sign a session out, or all others
+
+Options:
+  -h, --help  Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn sessions
+  hn sessions revoke <id>
+  hn sessions revoke --others

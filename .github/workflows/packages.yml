@@ -1,0 +1,58 @@
+name: Packages
+
+# After a release is published: Snap Store and winget. Each channel only runs once it is set up
+# (repository variables SNAP_ENABLED / WINGET_ENABLED = "true"), see docs/RELEASING.md.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version without v (e.g. 0.1.0)
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  snap:
+    if: vars.SNAP_ENABLED == 'true'
+    strategy:
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Version
+        id: v
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+          INPUT: ${{ inputs.version }}
+        run: echo "version=${INPUT:-${TAG#v}}" >> "$GITHUB_OUTPUT"
+      - uses: snapcore/action-build@3bdaa03e1ba6bf59a65f84a751d943d549a54e79 # v1
+        id: build
+        with:
+          path: packaging/snap
+        env:
+          VERSION: ${{ steps.v.outputs.version }}
+      - uses: snapcore/action-publish@214b86e5ca036ead1668c79afb81e550e6c54d40 # v1
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
+        with:
+          snap: ${{ steps.build.outputs.snap }}
+          release: stable
+
+  winget:
+    # The first version goes to microsoft/winget-pkgs by hand (packaging/winget/render.sh); this job
+    # opens the PR for every later one.
+    if: vars.WINGET_ENABLED == 'true'
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: vedantmgoyal9/winget-releaser@b7370d4d152efdce803a26cc6ca9eee58cb2ad54 # v2
+        with:
+          identifier: TexhFexLabs.HydroNode
+          release-tag: ${{ inputs.version && format('v{0}', inputs.version) || github.event.release.tag_name }}
+          installers-regex: 'x86_64-pc-windows-msvc\.zip$'
+          token: ${{ secrets.WINGET_TOKEN }}

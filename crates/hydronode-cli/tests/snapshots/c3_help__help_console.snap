@@ -1,0 +1,26 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Recent requests of your devices (last 48 hours), with the reason when one was
+rejected. Without SENSOR: all devices you manage.
+
+Usage: hn console [OPTIONS] [SENSOR]
+
+Arguments:
+  [SENSOR]  Sensor id, default all devices you manage
+
+Options:
+  -f, --follow         Keep printing new lines
+      --rejected       Only rejected requests
+  -n, --limit <LIMIT>  Number of lines (1 to 200) [default: 30]
+  -h, --help           Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn console
+  hn console <sensor-id> -f
+  hn console --rejected

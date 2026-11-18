@@ -1,0 +1,18 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Show the account, server and kind of login of the current profile.
+
+Usage: hn whoami [OPTIONS]
+
+Options:
+  -h, --help  Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn whoami
+  hn whoami --json

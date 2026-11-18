@@ -1,0 +1,25 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Your automations, what triggers them and when they last ran.
+
+Usage: hn automations [OPTIONS] [COMMAND]
+
+Commands:
+  list     List automations
+  show     Trigger, actions and recent runs of one automation
+  enable   Switch an automation on
+  disable  Switch an automation off
+
+Options:
+  -h, --help  Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn automations
+  hn automations show <id>
+  hn automations disable <id>

@@ -1,0 +1,6 @@
+---
+source: crates/hydronode-cli/tests/c5_devices_live.rs
+expression: stdout(&out)
+---
+NAME    HEALTH   BOARD     FIRMWARE  BATTERY  SIGNAL        JOB  ID
+Tank A  HEALTHY  ESP32-C3  0.8.0 ↑   80 %     -61 dBm wifi  -    550e8400-e29b-41d4-a716-446655440000

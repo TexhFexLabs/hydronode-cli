@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="dark light">
+<title>{{TITLE}} | HydroNode CLI</title>
+<style>
+:root {
+  --bg: #000000; --text: #ededed; --text-2: #a1a1a1; --muted: #5e5e5e;
+  --border: #1f1f1f; --border-strong: #2e2e2e; --accent: #ededed;
+  --state: #3fb950; --grid: rgba(255, 255, 255, 0.035); --glow: rgba(237, 237, 237, 0.035);
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #ffffff; --text: #000000; --text-2: #4d4d4d; --muted: #8f8f8f;
+    --border: #ebebeb; --border-strong: #d9d9d9; --accent: #000000;
+    --state: #1a7f37; --grid: rgba(0, 0, 0, 0.045); --glow: rgba(0, 0, 0, 0.025);
+  }
+}
+body.fail { --state: #f85149; }
+@media (prefers-color-scheme: light) { body.fail { --state: #cf222e; } }
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0; min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column;
+  background: var(--bg); color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.mono { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; }
+.grid {
+  position: fixed; inset: 0; pointer-events: none;
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, #000 30%, transparent 80%);
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, #000 30%, transparent 80%);
+}
+main { position: relative; flex: 1; display: flex; align-items: center; width: 100%; max-width: 1040px; margin: 0 auto; padding: 48px 24px; }
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 64px; width: 100%; }
+h1 { margin: 0; font-size: clamp(40px, 6.6vw, 84px); line-height: 1; font-weight: 650; letter-spacing: -0.045em; }
+.lead { margin: 24px 0 0; max-width: 460px; font-size: 17px; line-height: 1.6; color: var(--text-2); }
+.mark { width: clamp(180px, 24vw, 260px); height: clamp(180px, 24vw, 260px); }
+.mark svg { width: 100%; height: 100%; overflow: visible; }
+.orbit { fill: none; stroke: var(--border-strong); stroke-width: 0.6; stroke-dasharray: 1 3.2; }
+.track { fill: none; stroke: var(--state); stroke-width: 1.2; opacity: 0.55; stroke-dasharray: 100; stroke-dashoffset: 100; animation: draw 1.1s 0.15s ease-out forwards; }
+.waves circle { fill: none; stroke: var(--state); stroke-width: 0.6; opacity: 0; transform-origin: 60px 60px; animation: wave 3.2s ease-out 3; }
+.waves circle + circle { animation-delay: 1.6s; }
+.half path { fill: var(--accent); }
+.core { fill: var(--state); transform-box: fill-box; transform-origin: center; animation: core 3.2s ease-in-out infinite; }
+.glow { fill: var(--glow); }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes wave { 0% { opacity: 0.55; transform: scale(1); } 100% { opacity: 0; transform: scale(2.1); } }
+@keyframes core { 0%, 100% { transform: scale(0.86); opacity: 0.8; } 50% { transform: scale(1); opacity: 1; } }
+@media (max-width: 820px) { .hero { grid-template-columns: 1fr; gap: 36px; } .mark { order: -1; width: 120px; height: 120px; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } .track { stroke-dashoffset: 0; } }
+</style>
+</head>
+<body class="{{STATE}}">
+<div class="grid" aria-hidden="true"></div>
+<main>
+  <section class="hero">
+    <div>
+      <h1>{{HEADLINE}}</h1>
+      <p class="lead">{{LEAD}}</p>
+    </div>
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 120 120">
+        <circle class="glow" cx="60" cy="60" r="44"/>
+        <circle class="orbit" cx="60" cy="60" r="56"/>
+        <g class="waves"><circle cx="60" cy="60" r="24"/><circle cx="60" cy="60" r="24"/></g>
+        <circle class="track" cx="60" cy="60" r="44" pathLength="100"/>
+        <g transform="translate(38 38) scale(0.04297)">
+          <g class="half"><path d="M111.612 693.431C114.395 703.902 120.695 714.752 128.268 722.482C138.805 733.24 153.166 739.397 168.223 739.611C183.399 739.699 197.38 733.414 208.212 722.945C230.163 701.732 225.8 672.299 225.619 644.672L225.588 571.444L225.796 260.465C226.335 195.354 279.106 139.447 344.181 134.691C357.884 133.69 372.221 134.199 386.007 134.214C405.173 134.098 424.34 134.114 443.505 134.261C443.904 153.484 443.517 173.911 443.478 193.246L443.499 287.632L443.503 326.349C443.537 349.17 443.603 365.073 458.124 384.491C471.645 402.572 489.695 413.181 511.967 416.657C499.624 418.156 482.516 424.515 471.788 430.809C448.79 444.301 432.341 464.797 425.628 490.713C419.381 514.632 422.923 540.054 435.468 561.355C450.957 587.251 468.292 596.33 496.172 603.269L494.804 604.471C479.109 606.577 468.009 612.543 458.344 625.327C451.705 634.247 447.192 644.567 445.151 655.498C442.981 666.592 443.622 676.862 443.48 687.972C443.217 708.513 444.442 729.184 441.874 749.587C439.003 771.851 431.568 793.283 420.033 812.541C361.102 911.909 227.676 920.051 153.984 835.004C130.857 808.312 115.818 778.357 111.554 742.912C109.262 725.393 110.611 712.242 109.916 695.155L111.612 693.431Z"/></g>
+          <g class="half"><path d="M541.071 421.137C572.576 410.618 583.977 380.578 583.728 349.698C583.688 344.805 583.76 339.827 583.766 334.924L583.835 296.953C583.974 252.817 601.694 210.555 633.075 179.517C664.172 148.426 706.46 131.138 750.432 131.541C798.008 132.062 838.007 150.793 870.99 184.738C894.749 209.19 911.8 242.32 916.782 276.105C919.292 293.126 919.264 311.25 919.083 328.418L917.496 328.915C911.937 311.326 903.695 298.489 887.301 289.398C850.966 269.248 809.501 292.086 803.018 332.05C801.48 341.531 802.147 352.896 802.203 362.579L802.395 406.527L802.446 647.122L802.37 727.831C802.317 739.953 802.762 757.373 801.786 769.202C800.85 779.734 798.618 790.109 795.14 800.094C777.475 851.492 725.492 891.115 670.67 890.248C641.774 889.79 612.684 890.808 583.784 890.182C583.143 876.024 583.788 855.557 583.757 840.922L583.655 731.604C583.625 690.067 590.37 646.997 549.575 620.143C542.324 615.37 536.626 613.439 528.575 610.551C532.418 609.4 536.383 608.435 540.298 607.554C566.759 601.594 588.834 584.429 601.624 560.464C613.671 537.918 616.226 511.498 608.724 487.061C601.038 462.598 583.986 442.17 561.291 430.237C555.281 427.1 547.823 424.319 541.083 423.393C541.451 422.188 541.458 422.317 541.071 421.137Z"/></g>
+          <circle class="core" cx="518" cy="515" r="56"/>
+        </g>
+      </svg>
+    </div>
+  </section>
+</main>
+</body>
+</html>

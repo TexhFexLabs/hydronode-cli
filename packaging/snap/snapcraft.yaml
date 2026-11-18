@@ -1,0 +1,47 @@
+# Snap of the HydroNode CLI. Packs the release binaries (static musl builds from release.yml), so the
+# snap runs exactly what GitHub Releases ships. Build: `VERSION=0.1.0 snapcraft pack` in this
+# directory (or the snap workflow), publish: `snapcraft upload --release=stable *.snap`.
+name: hydronode
+title: HydroNode CLI
+summary: Sensors, values, devices and live data of HydroNode from your terminal
+description: |
+  hydronode (short: hn) is the command line for HydroNode (https://hydronode.tech): status of your
+  devices, value summaries, exports, live data, switching outputs and sending commands, scripted with
+  --json. Sign in with the browser, a device code or an API token.
+website: https://hydronode.tech/docs/guide/cli
+source-code: https://github.com/TexhFexLabs/hydronode-cli
+issues: https://github.com/TexhFexLabs/hydronode-cli/issues
+license: MIT
+adopt-info: hydronode
+base: core24
+grade: stable
+confinement: strict
+
+platforms:
+  amd64:
+  arm64:
+
+apps:
+  hydronode:
+    command: bin/hydronode
+    plugs: [network, network-bind, home, desktop, password-manager-service]
+  # `hn` as a short command needs the store's auto-alias (request on the snapcraft forum);
+  # until then: `sudo snap alias hydronode.hn hn`.
+  hn:
+    command: bin/hn
+    plugs: [network, network-bind, home, desktop, password-manager-service]
+
+parts:
+  hydronode:
+    plugin: dump
+    source:
+      - on amd64: https://github.com/TexhFexLabs/hydronode-cli/releases/download/v${VERSION}/hydronode-cli-x86_64-unknown-linux-musl.tar.xz
+      - on arm64: https://github.com/TexhFexLabs/hydronode-cli/releases/download/v${VERSION}/hydronode-cli-aarch64-unknown-linux-musl.tar.xz
+    source-type: tar
+    organize:
+      hn: bin/hn
+      hydronode: bin/hydronode
+    stage: [bin/hn, bin/hydronode, LICENSE, README.md]
+    override-pull: |
+      craftctl default
+      craftctl set version="${VERSION}"

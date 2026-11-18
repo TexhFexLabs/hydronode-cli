@@ -1,0 +1,25 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Export readings of your own sensors. CSV and JSON go to stdout unless -o is set.
+
+Usage: hn export [OPTIONS]
+
+Options:
+      --format <FORMAT>          File format [default: csv] [possible values: csv, json, parquet]
+      --sensor <ID>              Only these sensors (repeat), default all you own
+      --resolution <RESOLUTION>  Single readings or averages per 5 minutes, hour or day [default: raw] [possible values: raw, 5m, 1h, 1d]
+      --from <TIME>              Start: 7d, 2026-11-01, … [default: 7d]
+      --to <TIME>                End [default: now]
+  -o, --output <FILE>            Write to this file instead of stdout
+  -h, --help                     Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn export --from 7d > readings.csv
+  hn export --sensor <sensor-id> --format json --resolution 1h
+  hn export --from 30d --format parquet -o readings.parquet

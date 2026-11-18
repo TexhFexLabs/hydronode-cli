@@ -1,0 +1,23 @@
+---
+source: crates/hydronode-cli/tests/c3_help.rs
+expression: text
+---
+Add a profile, or change the server of an existing one. HTTPS only, plain http
+only for localhost and 127.0.0.1.
+
+Usage: hn profile add [OPTIONS] --server <URL> <NAME>
+
+Arguments:
+  <NAME>  Profile name
+
+Options:
+      --server <URL>  Server URL
+  -h, --help          Print help
+
+Global options:
+  -p, --profile <NAME>  Profile to use (server and login), see 'hn profile list'
+      --json            Print JSON instead of tables (stable shape, for scripts)
+
+Examples:
+  hn profile add work --server https://hydronode.tech
+  hn profile add local --server http://localhost:8080
