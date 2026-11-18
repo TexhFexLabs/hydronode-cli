@@ -1,0 +1,4 @@
+[env]
+# The vendored libdbus (keyring on Linux) is C. GCC on aarch64 emits calls to libgcc's outline atomics
+# (__aarch64_ldadd4_sync), which a static musl link does not have. Inline atomics instead.
+CFLAGS_aarch64_unknown_linux_musl = "-mno-outline-atomics"

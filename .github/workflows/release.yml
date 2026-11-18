@@ -133,8 +133,22 @@ jobs:
             curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
             echo "$HOME/.cargo/bin" >> $GITHUB_PATH
           fi
+      # Hand-edited (docs/RELEASING.md): the installer is checked by SHA-256 before it runs.
       - name: Install dist
-        run: ${{ matrix.install_dist.run }}
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          curl --proto '=https' --tlsv1.2 -LsSf -o "$RUNNER_TEMP/dist-installer.sh" https://github.com/axodotdev/cargo-dist/releases/download/v0.34.0/cargo-dist-installer.sh
+          echo "abb014a8486f08a3c2d9dd8bbf2c646c62fab61b1f1c9ff5bf2811ab305d17b1  $RUNNER_TEMP/dist-installer.sh" | shasum -a 256 -c -
+          sh "$RUNNER_TEMP/dist-installer.sh"
+      - name: Install dist
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $f = Join-Path $env:RUNNER_TEMP 'dist-installer.ps1'
+          Invoke-WebRequest -Uri https://github.com/axodotdev/cargo-dist/releases/download/v0.34.0/cargo-dist-installer.ps1 -OutFile $f
+          if ((Get-FileHash $f -Algorithm SHA256).Hash -ne '71BA4767A6FC2C0A553BB098CFAB3C233E23558D2A21B598E2FEB56427B113D3') { throw 'dist installer hash mismatch' }
+          & $f
       # Get the dist-manifest
       - name: Fetch local artifacts
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
