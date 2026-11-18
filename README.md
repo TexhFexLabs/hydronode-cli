@@ -142,6 +142,11 @@ Report vulnerabilities as described in [SECURITY.md](SECURITY.md).
 See [CONTRIBUTING.md](CONTRIBUTING.md). Short version: `cargo test --workspace`, `cargo clippy
 --all-targets -- -D warnings`, `cargo fmt`, `cargo deny check`.
 
+## Releasing
+
+Signed tag `vX.Y.Z` builds and publishes everything (GitHub Releases, Homebrew, Snap, winget). Details:
+[docs/RELEASING.md](docs/RELEASING.md).
+
 ## License
 
 MIT, see [LICENSE](LICENSE). © TexhFex Labs.
