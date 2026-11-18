@@ -1,6 +1,6 @@
 # Snap of the HydroNode CLI. Packs the release binaries (static musl builds from release.yml), so the
-# snap runs exactly what GitHub Releases ships. Build: `VERSION=0.1.0 snapcraft pack` in this
-# directory (or the snap workflow), publish: `snapcraft upload --release=stable *.snap`.
+# snap runs exactly what GitHub Releases ships. @VERSION@ is filled in by packages.yml; by hand:
+#   sed -i 's/@VERSION@/0.1.0/g' snapcraft.yaml && snapcraft pack && snapcraft upload --release=stable *.snap
 name: hydronode
 title: HydroNode CLI
 summary: Sensors, values, devices and live data of HydroNode from your terminal
@@ -12,7 +12,7 @@ website: https://hydronode.tech/docs/guide/cli
 source-code: https://github.com/TexhFexLabs/hydronode-cli
 issues: https://github.com/TexhFexLabs/hydronode-cli/issues
 license: MIT
-adopt-info: hydronode
+version: '@VERSION@'
 base: core24
 grade: stable
 confinement: strict
@@ -33,15 +33,15 @@ apps:
 
 parts:
   hydronode:
-    plugin: dump
+    # The release archives keep the files in a folder named after the archive; take them from
+    # wherever they are.
+    plugin: nil
     source:
-      - on amd64: https://github.com/TexhFexLabs/hydronode-cli/releases/download/v${VERSION}/hydronode-cli-x86_64-unknown-linux-musl.tar.xz
-      - on arm64: https://github.com/TexhFexLabs/hydronode-cli/releases/download/v${VERSION}/hydronode-cli-aarch64-unknown-linux-musl.tar.xz
+      - on amd64: https://github.com/TexhFexLabs/hydronode-cli/releases/download/v@VERSION@/hydronode-cli-x86_64-unknown-linux-musl.tar.xz
+      - on arm64: https://github.com/TexhFexLabs/hydronode-cli/releases/download/v@VERSION@/hydronode-cli-aarch64-unknown-linux-musl.tar.xz
     source-type: tar
-    organize:
-      hn: bin/hn
-      hydronode: bin/hydronode
-    stage: [bin/hn, bin/hydronode, LICENSE, README.md]
-    override-pull: |
-      craftctl default
-      craftctl set version="${VERSION}"
+    override-build: |
+      for bin in hn hydronode; do
+        install -Dm755 "$(find "$CRAFT_PART_SRC" -type f -name "$bin" | head -n1)" "$CRAFT_PART_INSTALL/bin/$bin"
+      done
+      install -Dm644 "$(find "$CRAFT_PART_SRC" -type f -name LICENSE | head -n1)" "$CRAFT_PART_INSTALL/LICENSE"

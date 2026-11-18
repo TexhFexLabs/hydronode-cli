@@ -1,10 +1,13 @@
 name: Packages
 
-# After a release is published: Snap Store and winget. Each channel only runs once it is set up
-# (repository variables SNAP_ENABLED / WINGET_ENABLED = "true"), see docs/RELEASING.md.
+# After the Release workflow finished a tag: Snap Store and winget. A release created with
+# GITHUB_TOKEN fires no `release` event, so this follows the workflow run instead. Each channel only
+# runs once it is set up (repository variables SNAP_ENABLED / WINGET_ENABLED = "true"), see
+# docs/RELEASING.md.
 on:
-  release:
-    types: [published]
+  workflow_run:
+    workflows: [Release]
+    types: [completed]
   workflow_dispatch:
     inputs:
       version:
@@ -16,7 +19,10 @@ permissions:
 
 jobs:
   snap:
-    if: vars.SNAP_ENABLED == 'true'
+    if: >-
+      vars.SNAP_ENABLED == 'true' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event.workflow_run.conclusion == 'success' && startsWith(github.event.workflow_run.head_branch, 'v')))
     strategy:
       matrix:
         runner: [ubuntu-24.04, ubuntu-24.04-arm]
@@ -27,15 +33,17 @@ jobs:
       - name: Version
         id: v
         env:
-          TAG: ${{ github.event.release.tag_name }}
+          TAG: ${{ github.event.workflow_run.head_branch }}
           INPUT: ${{ inputs.version }}
         run: echo "version=${INPUT:-${TAG#v}}" >> "$GITHUB_OUTPUT"
+      - name: Fill in the version
+        env:
+          VERSION: ${{ steps.v.outputs.version }}
+        run: sed -i "s/@VERSION@/${VERSION}/g" packaging/snap/snapcraft.yaml
       - uses: snapcore/action-build@3bdaa03e1ba6bf59a65f84a751d943d549a54e79 # v1
         id: build
         with:
           path: packaging/snap
-        env:
-          VERSION: ${{ steps.v.outputs.version }}
       - uses: snapcore/action-publish@214b86e5ca036ead1668c79afb81e550e6c54d40 # v1
         env:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
@@ -46,13 +54,16 @@ jobs:
   winget:
     # The first version goes to microsoft/winget-pkgs by hand (packaging/winget/render.sh); this job
     # opens the PR for every later one.
-    if: vars.WINGET_ENABLED == 'true'
+    if: >-
+      vars.WINGET_ENABLED == 'true' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event.workflow_run.conclusion == 'success' && startsWith(github.event.workflow_run.head_branch, 'v')))
     runs-on: windows-latest
     timeout-minutes: 15
     steps:
       - uses: vedantmgoyal9/winget-releaser@b7370d4d152efdce803a26cc6ca9eee58cb2ad54 # v2
         with:
           identifier: TexhFexLabs.HydroNode
-          release-tag: ${{ inputs.version && format('v{0}', inputs.version) || github.event.release.tag_name }}
+          release-tag: ${{ inputs.version && format('v{0}', inputs.version) || github.event.workflow_run.head_branch }}
           installers-regex: 'x86_64-pc-windows-msvc\.zip$'
           token: ${{ secrets.WINGET_TOKEN }}

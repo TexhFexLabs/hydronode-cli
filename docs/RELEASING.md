@@ -3,24 +3,32 @@
 Channels: GitHub Releases (archives, `.sha256`, build provenance), shell and PowerShell installers,
 Homebrew tap `TexhFexLabs/homebrew-tap`, winget `TexhFexLabs.HydroNode`, Snap `hydronode`. No npm, no crates.io.
 
-## Once, before the first release
+## Setup (done 2026-11-18)
 
-1. Repository public. Secret `HOMEBREW_TAP_TOKEN` (fine-grained PAT, contents write on `homebrew-tap` only),
-   repository `TexhFexLabs/homebrew-tap` exists (empty `Formula/`).
-2. Snap: register the name `hydronode` (`snapcraft register hydronode`), export credentials
-   (`snapcraft export-login --snaps hydronode --channels stable -`) into secret `SNAPCRAFT_STORE_CREDENTIALS`,
-   set variable `SNAP_ENABLED=true`. Ask on forum.snapcraft.io for the auto-alias `hn`.
-3. winget: after the first release, `packaging/winget/render.sh <version>`, check the files with
-   `winget validate` and install them on Windows with `winget install --manifest <dir>`, open the PR to
-   `microsoft/winget-pkgs` by hand. When it is merged: secret `WINGET_TOKEN` (classic PAT, `public_repo`, for the fork),
-   variable `WINGET_ENABLED=true`; from then on `packages.yml` opens the PR for each release.
+| Channel | State | Where |
+|---|---|---|
+| GitHub Releases | archives, `.sha256`, build attestations | `release.yml` (dist) |
+| Homebrew | tap `TexhFexLabs/homebrew-tap`, formula `hydronode` | secret `HOMEBREW_TAP_TOKEN` (fine-grained PAT, contents write on the tap only, renew yearly) |
+| Snap | name `hydronode` registered, channel `stable` | secret `SNAPCRAFT_STORE_CREDENTIALS` (`snapcraft export-login --snaps=hydronode --acls=package_access,package_push,package_update,package_release`, expires 2027-11-18), variable `SNAP_ENABLED=true` |
+| winget | not yet | below |
+
+Snap renew: `snapcraft login`, run the `export-login` line again into the secret. `hn` as a short command needs
+the store's auto-alias: ask on forum.snapcraft.io (category store-requests), until then
+`sudo snap alias hydronode.hn hn`. The plug `password-manager-service` is not connected automatically;
+without it the CLI keeps tokens in its private file (0600): `sudo snap connect hydronode:password-manager-service`.
+
+winget: after the first release, `packaging/winget/render.sh <version>`, check with `winget validate` (and
+`winget install --manifest <dir>` on Windows), open the PR to `microsoft/winget-pkgs`. Once merged: secret
+`WINGET_TOKEN` (classic PAT, `public_repo`, for the fork), variable `WINGET_ENABLED=true`; from then on
+`packages.yml` opens the PR for each release.
 
 ## Every release
 
 1. Version in `Cargo.toml` (workspace), `CHANGELOG.md`, commit, PR, CI green, merge.
 2. Signed tag: `git tag -s vX.Y.Z -m "HydroNode CLI X.Y.Z" && git push origin vX.Y.Z`.
 3. `release.yml` builds all targets, attests them, creates the GitHub release and updates the Homebrew formula.
-   `packages.yml` follows with Snap and winget.
+   `packages.yml` follows the finished Release run (a release made with `GITHUB_TOKEN` fires no `release` event)
+   with Snap (amd64, arm64) and winget. Rerun by hand: Actions › Packages › Run workflow with the version.
 4. Check: `brew install texhfexlabs/tap/hydronode`, `gh attestation verify <archive> -R TexhFexLabs/hydronode-cli`.
 
 ## Changing release.yml
