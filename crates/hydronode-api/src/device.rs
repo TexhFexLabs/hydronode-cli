@@ -167,7 +167,7 @@ pub async fn send_round(
         .send()
         .await?;
     let status = resp.status().as_u16();
-    let text = resp.text().await.unwrap_or_default();
+    let text = crate::client::read_text(resp, crate::client::MAX_SMALL_BODY).await?;
     let body = serde_json::from_str(&text).unwrap_or(serde_json::Value::String(text));
     Ok((status, body))
 }

@@ -72,16 +72,20 @@ pub fn render(frame: &mut Frame, state: &State, now: Timestamp) {
         Constraint::Length(1),
     ])
     .areas(frame.area());
+    let values = state.rows.len();
+    let sensors = state
+        .rows
+        .keys()
+        .map(|(s, _)| s)
+        .collect::<HashSet<_>>()
+        .len();
+    let plural =
+        |n: usize, one: &str, many: &str| format!("{n} {}", if n == 1 { one } else { many });
     frame.render_widget(
         Line::from(format!(
-            "HydroNode live  {} values from {} sensors",
-            state.rows.len(),
-            state
-                .rows
-                .keys()
-                .map(|(s, _)| s)
-                .collect::<HashSet<_>>()
-                .len()
+            "HydroNode live  {} from {}",
+            plural(values, "value", "values"),
+            plural(sensors, "sensor", "sensors")
         ))
         .style(Style::default().add_modifier(Modifier::BOLD)),
         head,

@@ -562,6 +562,9 @@ pub struct ExportArgs {
     /// Write to this file instead of stdout
     #[arg(short = 'o', long, value_name = "FILE")]
     pub output: Option<std::path::PathBuf>,
+    /// Overwrite the file without asking
+    #[arg(short = 'y', long)]
+    pub yes: bool,
 }
 
 #[derive(Args, Debug)]
@@ -1011,6 +1014,21 @@ fn rename(cmd: clap::Command, bin: &str) -> clap::Command {
     }
     if let Some(t) = before {
         cmd = cmd.before_help(t);
+    }
+    if let Some(t) = cmd.get_about().map(|t| as_bin(&t.to_string(), bin)) {
+        cmd = cmd.about(t);
+    }
+    if let Some(t) = cmd.get_long_about().map(|t| as_bin(&t.to_string(), bin)) {
+        cmd = cmd.long_about(t);
+    }
+    let args: Vec<(String, String)> = cmd
+        .get_arguments()
+        .filter_map(|a| Some((a.get_id().to_string(), a.get_help()?.to_string())))
+        .filter(|(_, h)| h.contains("'hn "))
+        .collect();
+    for (id, help) in args {
+        let help = as_bin(&help, bin);
+        cmd = cmd.mut_arg(id, |a| a.help(help));
     }
     let names: Vec<String> = cmd
         .get_subcommands()

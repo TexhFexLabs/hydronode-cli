@@ -17,6 +17,8 @@ pub struct Ctx {
     pub profile: String,
     pub out: Out,
     pub bin: String,
+    /// The profile a plain command (no `-p`) would use: `HYDRONODE_PROFILE` or the active one.
+    implicit_profile: String,
 }
 
 impl Ctx {
@@ -24,12 +26,17 @@ impl Ctx {
         let dir = config_dir()?;
         let config = Config::load(&Config::path_in(&dir))?;
         let profile = config.active_name(profile_flag);
+        let implicit_profile = std::env::var("HYDRONODE_PROFILE")
+            .ok()
+            .filter(|p| !p.trim().is_empty())
+            .unwrap_or_else(|| config.active_name(None));
         Ok(Ctx {
             dir,
             config,
             profile,
             out: Out::new(json),
             bin: bin.to_string(),
+            implicit_profile,
         })
     }
 
@@ -53,9 +60,9 @@ impl Ctx {
         Ok(Client::new(self.server()?, &self.profile, self.store()))
     }
 
-    /// `hn`/`hydronode`, with `-p work` for another profile, for hints.
+    /// `hn`/`hydronode`, with `-p work` only when a plain command would pick another profile.
     pub fn hn(&self) -> String {
-        if self.profile == "default" {
+        if self.profile == self.implicit_profile {
             self.bin.clone()
         } else {
             format!("{} -p {}", self.bin, self.profile)

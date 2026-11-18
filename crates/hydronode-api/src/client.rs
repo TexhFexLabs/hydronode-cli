@@ -12,6 +12,41 @@ use crate::{Error, Result};
 /// Refresh this long before the access token runs out.
 const REFRESH_EARLY_SECS: i64 = 60;
 
+/// Largest API answer we read into memory. Anything bigger is a broken or hostile server.
+pub const MAX_BODY: usize = 64 * 1024 * 1024;
+/// Exports can be large (raw readings over months); still bounded.
+pub const MAX_EXPORT_BODY: usize = 1024 * 1024 * 1024;
+/// OAuth metadata, token and device answers are a few hundred bytes.
+pub(crate) const MAX_SMALL_BODY: usize = 1024 * 1024;
+
+/// Read a response body, but stop once it grows past `max` bytes.
+pub(crate) async fn read_body(mut resp: reqwest::Response, max: usize) -> Result<Vec<u8>> {
+    if resp.content_length().is_some_and(|n| n > max as u64) {
+        return Err(too_large(max));
+    }
+    let mut out = Vec::new();
+    while let Some(chunk) = resp.chunk().await? {
+        if out.len() + chunk.len() > max {
+            return Err(too_large(max));
+        }
+        out.extend_from_slice(&chunk);
+    }
+    Ok(out)
+}
+
+/// [`read_body`] as text (lossy), empty on a read error, like `Response::text().unwrap_or_default()`.
+pub(crate) async fn read_text(resp: reqwest::Response, max: usize) -> Result<String> {
+    match read_body(resp, max).await {
+        Ok(b) => Ok(String::from_utf8_lossy(&b).into_owned()),
+        Err(e @ Error::TooLarge(_)) => Err(e),
+        Err(_) => Ok(String::new()),
+    }
+}
+
+fn too_large(max: usize) -> Error {
+    Error::TooLarge(max / (1024 * 1024))
+}
+
 /// Raw answer of [`Client::request`].
 #[derive(Debug, Clone)]
 pub struct RawResponse {
@@ -232,6 +267,19 @@ impl Client {
         query: &[(&str, String)],
         body: Option<&Value>,
     ) -> Result<RawResponse> {
+        self.request_limited(method, path, query, body, MAX_BODY)
+            .await
+    }
+
+    /// [`Client::request`] with its own answer size limit (exports).
+    pub async fn request_limited(
+        &self,
+        method: Method,
+        path: &str,
+        query: &[(&str, String)],
+        body: Option<&Value>,
+        max_body: usize,
+    ) -> Result<RawResponse> {
         let url = self.url(path, query)?;
         let mut cred = self.fresh_credential().await?;
         if method != Method::GET && method != Method::HEAD && cred.is_read_only() {
@@ -261,7 +309,7 @@ impl Client {
                 .get(reqwest::header::CONTENT_TYPE)
                 .and_then(|v| v.to_str().ok())
                 .map(str::to_string);
-            let bytes = resp.bytes().await?.to_vec();
+            let bytes = read_body(resp, max_body).await?;
             return Ok(RawResponse {
                 status,
                 content_type,

@@ -247,7 +247,40 @@ fn private_file(path: &Path) -> std::io::Result<File> {
     Ok(file)
 }
 
-#[cfg(not(unix))]
+/// Windows: the file sits in the user's profile, which is already private by default. On top,
+/// drop inherited rights and grant only the current user (`icacls`, part of every Windows),
+/// before anything is written into it. If that fails, the profile's own rights still apply.
+#[cfg(windows)]
+fn private_file(path: &Path) -> std::io::Result<File> {
+    let file = OpenOptions::new()
+        .create(true)
+        .write(true)
+        .truncate(true)
+        .open(path)?;
+    let user = match (std::env::var("USERDOMAIN"), std::env::var("USERNAME")) {
+        (Ok(d), Ok(u)) if !d.is_empty() => format!("{d}\\{u}"),
+        (_, Ok(u)) => u,
+        _ => String::new(),
+    };
+    let ok = !user.is_empty()
+        && std::process::Command::new("icacls")
+            .arg(path)
+            .args(["/inheritance:r", "/grant:r"])
+            .arg(format!("{user}:F"))
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .status()
+            .is_ok_and(|s| s.success());
+    if !ok {
+        eprintln!(
+            "warning: could not limit {} to your user, it keeps the rights of your profile folder",
+            path.display()
+        );
+    }
+    Ok(file)
+}
+
+#[cfg(not(any(unix, windows)))]
 fn private_file(path: &Path) -> std::io::Result<File> {
     OpenOptions::new()
         .create(true)

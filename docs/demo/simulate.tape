@@ -2,24 +2,24 @@
 Output docs/demo/simulate.gif
 
 Set Shell "bash"
-Set FontSize 16
-Set Width 1100
+Set FontSize 15
+Set Width 1500
 Set Height 520
 Set Padding 24
 Set Theme "Catppuccin Mocha"
 Set TypingSpeed 45ms
 
 Hide
-Type "export HYDRONODE_PROFILE=int && clear"
+Type "export HYDRONODE_PROFILE=${HN_DEMO_PROFILE:-demo} PS1='\n$ ' PATH=${HN_DEMO_BIN:+$HN_DEMO_BIN:}$PATH && clear"
 Enter
 Show
 
-Type "hn simulate $HN_DEMO_SENSOR --kind greenhouse --every 10s --count 3"
+Type "hydronode simulate $HN_DEMO_SENSOR --kind greenhouse --every 10s --count 3"
 Sleep 300ms
 Enter
 Sleep 23s
 
-Type "hn console $HN_DEMO_SENSOR -n 5"
+Type "hydronode console $HN_DEMO_SENSOR -n 5"
 Sleep 300ms
 Enter
 Sleep 3s

@@ -16,6 +16,7 @@ use sha2::{Digest, Sha256};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use url::Url;
 
+use crate::client::{read_text, MAX_SMALL_BODY};
 use crate::credentials::Credential;
 use crate::{Error, Result};
 
@@ -117,7 +118,8 @@ impl Metadata {
         if !resp.status().is_success() {
             return Ok(meta);
         }
-        let doc: Value = resp.json().await.unwrap_or(Value::Null);
+        let text = read_text(resp, MAX_SMALL_BODY).await?;
+        let doc: Value = serde_json::from_str(&text).unwrap_or(Value::Null);
         let take = |key: &str, slot: &mut String| {
             if let Some(v) = doc[key].as_str() {
                 // endpoints must stay on the same origin as the server we trust
@@ -185,7 +187,7 @@ pub(crate) async fn token_request(
         .send()
         .await?;
     let status = resp.status().as_u16();
-    let text = resp.text().await.unwrap_or_default();
+    let text = read_text(resp, MAX_SMALL_BODY).await?;
     if (200..300).contains(&status) {
         let t: TokenResponse = serde_json::from_str(&text)
             .map_err(|_| Error::Login("the server sent an unreadable token answer".into()))?;
@@ -298,6 +300,30 @@ fn callback_page(ok: bool) -> String {
         .replace("{{LEAD}}", lead)
 }
 
+/// One connection gets this long to send its request line and headers. A stalled or idle
+/// connection (a browser preconnect, a local port scanner) must not block the real redirect.
+const CALLBACK_READ_TIMEOUT: Duration = Duration::from_secs(5);
+
+/// Read the request head of one connection, or `None` when it stalls or closes early.
+async fn read_head(sock: &mut tokio::net::TcpStream) -> Option<String> {
+    let read = async {
+        let mut buf = Vec::with_capacity(2048);
+        let mut chunk = [0u8; 1024];
+        while !buf.windows(4).any(|w| w == b"\r\n\r\n") && buf.len() < 16 * 1024 {
+            let n = sock.read(&mut chunk).await.ok()?;
+            if n == 0 {
+                break;
+            }
+            buf.extend_from_slice(&chunk[..n]);
+        }
+        Some(String::from_utf8_lossy(&buf).into_owned())
+    };
+    tokio::time::timeout(CALLBACK_READ_TIMEOUT, read)
+        .await
+        .ok()
+        .flatten()
+}
+
 async fn wait_for_callback(
     listener: &tokio::net::TcpListener,
     state: &str,
@@ -305,16 +331,9 @@ async fn wait_for_callback(
 ) -> Result<HashMap<String, String>> {
     loop {
         let (mut sock, _) = listener.accept().await?;
-        let mut buf = Vec::with_capacity(2048);
-        let mut chunk = [0u8; 1024];
-        while !buf.windows(4).any(|w| w == b"\r\n\r\n") && buf.len() < 16 * 1024 {
-            let n = sock.read(&mut chunk).await?;
-            if n == 0 {
-                break;
-            }
-            buf.extend_from_slice(&chunk[..n]);
-        }
-        let head = String::from_utf8_lossy(&buf);
+        let Some(head) = read_head(&mut sock).await else {
+            continue;
+        };
         let target = head
             .lines()
             .next()
@@ -332,35 +351,56 @@ async fn wait_for_callback(
         };
         let params: HashMap<String, String> = parsed.query_pairs().into_owned().collect();
         let outcome = check_callback(&params, state, issuer);
-        let page = callback_page(outcome.is_ok());
-        let resp = format!(
-            "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nCache-Control: no-store\r\n\
-             Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'\r\n\
-             Referrer-Policy: no-referrer\r\nX-Content-Type-Options: nosniff\r\n\
-             Content-Length: {}\r\nConnection: close\r\n\r\n{page}",
-            page.len()
-        );
-        let _ = sock.write_all(resp.as_bytes()).await;
+        let _ = sock
+            .write_all(callback_response(outcome.is_ok()).as_bytes())
+            .await;
         let _ = sock.shutdown().await;
-        return outcome.map(|_| params);
+        match outcome {
+            // Not our login (another tab, a stale redirect, a local process guessing): show the
+            // failure page there, keep waiting for the real answer until the overall timeout.
+            Err(CallbackError::WrongState) => continue,
+            Err(CallbackError::Stop(e)) => return Err(e),
+            Ok(()) => return Ok(params),
+        }
     }
 }
 
-fn check_callback(params: &HashMap<String, String>, state: &str, issuer: &str) -> Result<()> {
+fn callback_response(ok: bool) -> String {
+    let page = callback_page(ok);
+    format!(
+        "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nCache-Control: no-store\r\n\
+         Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'\r\n\
+         Referrer-Policy: no-referrer\r\nX-Content-Type-Options: nosniff\r\n\
+         Content-Length: {}\r\nConnection: close\r\n\r\n{page}",
+        page.len()
+    )
+}
+
+#[derive(Debug)]
+enum CallbackError {
+    /// The `state` does not match: this answer belongs to another login, ignore it.
+    WrongState,
+    /// Our login, but it failed (denied, other issuer, server error).
+    Stop(Error),
+}
+
+fn check_callback(
+    params: &HashMap<String, String>,
+    state: &str,
+    issuer: &str,
+) -> std::result::Result<(), CallbackError> {
     if params.get("state").map(String::as_str) != Some(state) {
-        return Err(Error::Login(
-            "the browser answer had the wrong state, login stopped".into(),
-        ));
+        return Err(CallbackError::WrongState);
     }
     if let Some(iss) = params.get("iss") {
         if iss.trim_end_matches('/') != issuer.trim_end_matches('/') {
-            return Err(Error::Login(
+            return Err(CallbackError::Stop(Error::Login(
                 "the browser answer came from another issuer, login stopped".into(),
-            ));
+            )));
         }
     }
     if let Some(err) = params.get("error") {
-        return Err(Error::Login(match err.as_str() {
+        return Err(CallbackError::Stop(Error::Login(match err.as_str() {
             "access_denied" => "access was denied in the browser".into(),
             other => format!(
                 "login failed: {}",
@@ -369,7 +409,7 @@ fn check_callback(params: &HashMap<String, String>, state: &str, issuer: &str) -
                     .cloned()
                     .unwrap_or_else(|| other.to_string())
             ),
-        }));
+        })));
     }
     Ok(())
 }
@@ -424,12 +464,12 @@ pub async fn login_device(
         .await?;
     if !resp.status().is_success() {
         let status = resp.status().as_u16();
-        let e: OAuthError = resp.json().await.unwrap_or_default();
+        let text = read_text(resp, MAX_SMALL_BODY).await?;
+        let e: OAuthError = serde_json::from_str(&text).unwrap_or_default();
         return Err(Error::Login(device_start_failure(status, e)));
     }
-    let start: DeviceStart = resp
-        .json()
-        .await
+    let text = read_text(resp, MAX_SMALL_BODY).await?;
+    let start: DeviceStart = serde_json::from_str(&text)
         .map_err(|_| Error::Login("the server sent an unreadable device answer".into()))?;
     events.show_code(
         &start.user_code,
@@ -499,7 +539,7 @@ pub async fn login_token(
         .map_err(|e| Error::Other(e.to_string()))?;
     let resp = http.get(url).bearer_auth(token).send().await?;
     let status = resp.status().as_u16();
-    let text = resp.text().await.unwrap_or_default();
+    let text = read_text(resp, MAX_SMALL_BODY).await?;
     if !(200..300).contains(&status) {
         return Err(crate::client::api_error(status, &text));
     }

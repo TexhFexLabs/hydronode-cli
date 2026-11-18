@@ -13,6 +13,7 @@ Options:
       --from <TIME>              Start: 7d, 2026-11-01, … [default: 7d]
       --to <TIME>                End [default: now]
   -o, --output <FILE>            Write to this file instead of stdout
+  -y, --yes                      Overwrite the file without asking
   -h, --help                     Print help
 
 Global options:

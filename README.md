@@ -22,8 +22,14 @@
 values, switches outputs, sends commands, updates firmware over the air and fakes a device when you
 need test data. Tables for people, `--json` for scripts.
 
-<!-- Demo GIFs are rendered from docs/demo/*.tape with vhs (https://github.com/charmbracelet/vhs). -->
-<!-- <p align="center"><img src="docs/demo/quickstart.gif" alt="hydronode login, status and values" width="720"></p> -->
+<!-- Demo GIFs are rendered from docs/demo/*.tape with vhs (https://github.com/charmbracelet/vhs), see docs/demo/README.md. -->
+<p align="center"><img src="docs/demo/quickstart.gif" alt="hydronode status, sensors and a temperature summary" width="820"></p>
+
+<details>
+<summary>More: periods above a limit, every value of a sensor, live view</summary>
+<p align="center"><img src="docs/demo/values.gif" alt="hydronode values --above and sensors show" width="820"></p>
+<p align="center"><img src="docs/demo/watch.gif" alt="hydronode watch, live values in the full-screen view" width="720"></p>
+</details>
 
 ## Install
 

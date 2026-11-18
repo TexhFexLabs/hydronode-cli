@@ -10,7 +10,7 @@ use serde_json::Value;
 
 use super::seg;
 use crate::cli::{ExportArgs, ExportFormat, Resolution};
-use crate::ctx::Ctx;
+use crate::ctx::{confirm, Ctx};
 
 pub async fn run(ctx: &Ctx, args: ExportArgs) -> Result<()> {
     if args.format == ExportFormat::Parquet
@@ -20,6 +20,16 @@ pub async fn run(ctx: &Ctx, args: ExportArgs) -> Result<()> {
         return Err(Error::Usage(
             "Parquet is binary: write it to a file with -o readings.parquet".into(),
         ));
+    }
+    if let Some(path) = &args.output {
+        if path.exists()
+            && !confirm(
+                &format!("{} exists. Overwrite it?", path.display()),
+                args.yes,
+            )?
+        {
+            return Err(Error::Usage("stopped, nothing written".into()));
+        }
     }
     let from = parse_instant_now(&args.from)?;
     let to = parse_instant_now(&args.to)?;
@@ -51,7 +61,13 @@ pub async fn run(ctx: &Ctx, args: ExportArgs) -> Result<()> {
     }
     let client = ctx.client()?;
     let raw = client
-        .request(Method::GET, "/api/data-transfer/v1/export", &query, None)
+        .request_limited(
+            Method::GET,
+            "/api/data-transfer/v1/export",
+            &query,
+            None,
+            hydronode_api::client::MAX_EXPORT_BODY,
+        )
         .await?;
     if !(200..300).contains(&raw.status) {
         return Err(hydronode_api::client::api_error(

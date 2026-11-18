@@ -30,6 +30,9 @@ pub enum Error {
     /// Login did not complete.
     #[error("{0}")]
     Login(String),
+    /// The server sent more than we are willing to read (size in MB).
+    #[error("the server answer is larger than {0} MB, stopped reading")]
+    TooLarge(usize),
     #[error("network error: {0}")]
     Http(#[from] reqwest::Error),
     #[error("{0}")]
@@ -101,6 +104,7 @@ impl Error {
             Error::Usage(_) => "USAGE".into(),
             Error::InsecureServer(_) => "INSECURE_SERVER".into(),
             Error::Login(_) => "LOGIN_FAILED".into(),
+            Error::TooLarge(_) => "TOO_LARGE".into(),
             Error::Http(_) => "NETWORK".into(),
             Error::Io(_) => "IO".into(),
             Error::Config(_) => "CONFIG".into(),

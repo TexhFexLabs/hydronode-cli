@@ -55,6 +55,10 @@ fn pkce_challenge_is_sha256_of_verifier() {
 /// A fake browser: checks the authorize URL, then calls the loopback callback.
 struct FakeBrowser {
     tamper_state: bool,
+    /// After the wrong answer, also send the right one (a stale tab first, then the real login).
+    then_right: bool,
+    /// Open an idle connection first that never sends anything (preconnect, port scanner).
+    idle_first: bool,
     seen: Mutex<Option<Url>>,
 }
 
@@ -64,14 +68,21 @@ impl WebLoginEvents for FakeBrowser {
         *self.seen.lock().unwrap() = Some(url.clone());
         let q: std::collections::HashMap<_, _> = url.query_pairs().into_owned().collect();
         let redirect = q["redirect_uri"].clone();
-        let state = if self.tamper_state {
-            "wrong".to_string()
-        } else {
-            q["state"].clone()
-        };
+        let right = q["state"].clone();
+        let (tamper, then_right, idle_first) =
+            (self.tamper_state, self.then_right, self.idle_first);
         std::thread::spawn(move || {
-            let target = format!("{redirect}?code=fake_code&state={state}");
-            let _ = fakehttp::blocking_get(&target);
+            let _idle = idle_first.then(|| {
+                let u = Url::parse(&redirect).unwrap();
+                std::net::TcpStream::connect((u.host_str().unwrap(), u.port().unwrap())).unwrap()
+            });
+            if tamper {
+                let _ = fakehttp::blocking_get(&format!("{redirect}?code=evil_code&state=wrong"));
+                if !then_right {
+                    return;
+                }
+            }
+            let _ = fakehttp::blocking_get(&format!("{redirect}?code=fake_code&state={right}"));
         });
         true
     }
@@ -112,6 +123,8 @@ async fn web_login_exchanges_code_with_verifier() {
 
     let browser = FakeBrowser {
         tamper_state: false,
+        then_right: false,
+        idle_first: false,
         seen: Mutex::new(None),
     };
     let base = Url::parse(&server.uri()).unwrap();
@@ -151,19 +164,66 @@ async fn web_login_wrong_state_never_asks_for_a_token() {
         .await;
     let browser = FakeBrowser {
         tamper_state: true,
+        then_right: false,
+        idle_first: false,
         seen: Mutex::new(None),
     };
     let base = Url::parse(&server.uri()).unwrap();
+    // a wrong answer is ignored, the login keeps waiting until it times out
     let err = auth::login_web(
         &auth::http_client(),
         &base,
         &browser,
-        Duration::from_secs(10),
+        Duration::from_secs(2),
     )
     .await
     .unwrap_err();
-    assert!(err.to_string().contains("state"), "{err}");
+    assert!(err.to_string().contains("timed out"), "{err}");
     assert_eq!(err.exit_code(), 3);
+}
+
+#[tokio::test]
+async fn web_login_survives_a_wrong_answer_and_an_idle_connection() {
+    let server = MockServer::start().await;
+    metadata(&server).await;
+    Mock::given(method("POST"))
+        .and(path("/oauth/token"))
+        .and(body_string_contains("code=fake_code"))
+        .respond_with(token_ok())
+        .expect(1)
+        .mount(&server)
+        .await;
+    let browser = FakeBrowser {
+        tamper_state: true,
+        then_right: true,
+        idle_first: true,
+        seen: Mutex::new(None),
+    };
+    let base = Url::parse(&server.uri()).unwrap();
+    let cred = auth::login_web(
+        &auth::http_client(),
+        &base,
+        &browser,
+        Duration::from_secs(20),
+    )
+    .await
+    .unwrap();
+    assert!(matches!(cred, Credential::Session { .. }));
+}
+
+#[tokio::test]
+async fn oversized_answer_is_not_read() {
+    let server = MockServer::start().await;
+    Mock::given(method("GET"))
+        .and(path("/api/agent/v1/me"))
+        .respond_with(ResponseTemplate::new(200).set_body_string("x".repeat(2 * 1024 * 1024)))
+        .mount(&server)
+        .await;
+    let base = Url::parse(&server.uri()).unwrap();
+    let err = auth::login_token(&auth::http_client(), &base, "hat_0123456789abcdef")
+        .await
+        .unwrap_err();
+    assert!(matches!(err, hydronode_api::Error::TooLarge(1)), "{err}");
 }
 
 #[derive(Default)]
