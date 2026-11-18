@@ -114,6 +114,11 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       BUILD_MANIFEST_NAME: target/distrib/${{ join(matrix.targets, '-') }}-dist-manifest.json
+      # macOS signing (Developer ID). Hand edit: only the Apple builds get the certificate.
+      CODESIGN_CERTIFICATE: ${{ contains(join(matrix.targets, ','), 'apple-darwin') && secrets.CODESIGN_CERTIFICATE || '' }}
+      CODESIGN_CERTIFICATE_PASSWORD: ${{ contains(join(matrix.targets, ','), 'apple-darwin') && secrets.CODESIGN_CERTIFICATE_PASSWORD || '' }}
+      CODESIGN_IDENTITY: ${{ contains(join(matrix.targets, ','), 'apple-darwin') && secrets.CODESIGN_IDENTITY || '' }}
+      CODESIGN_OPTIONS: runtime
     permissions:
       "attestations": "write"
       "contents": "read"

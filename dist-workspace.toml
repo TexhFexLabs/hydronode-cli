@@ -21,6 +21,8 @@ publish-jobs = ["homebrew"]
 github-attestations = true
 install-path = "CARGO_HOME"
 install-updater = false
+# Developer ID signing of the macOS binaries (secrets CODESIGN_*, see docs/RELEASING.md)
+macos-sign = true
 # no plan runs on pull requests: only tags and manual runs touch the release workflow
 pr-run-mode = "skip"
 dispatch-releases = false

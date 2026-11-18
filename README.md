@@ -137,6 +137,7 @@ Report vulnerabilities as described in [SECURITY.md](SECURITY.md).
 | `error: not logged in` | `hydronode login`, or `hydronode -p <profile> login` for another profile |
 | `your session has ended` | The session was signed out (web, other device). `hydronode login` again |
 | Browser does not open | Copy the printed link, or use `hydronode login --device` |
+| macOS asks again and again to allow keychain access | Versions before 0.1.2 are not signed, so every update is a new program for macOS. Update to 0.1.2 or newer and choose "Always Allow" once |
 | `warning: no usable system keychain` | Linux without Secret Service: tokens go to a 0600 file. Install `gnome-keyring` or `kwallet` for the keychain |
 | `plain http is not allowed` | Use `https://`, or `localhost` for a local server |
 | `This needs a full login` | You use a read-only token. `hydronode login` with the browser or a full `hat_` token |

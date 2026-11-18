@@ -21,5 +21,6 @@ Step by step in `docs/RELEASING.md`. In short: version in `Cargo.toml` + `CHANGE
 `vX.Y.Z` → `release.yml` (dist 0.34.0: archives for macOS/Linux/Windows, checksums, build attestations, shell and
 PowerShell installers, Homebrew formula in `TexhFexLabs/homebrew-tap`) → `packages.yml` (Snap Store, winget).
 `release.yml` is hand-hardened after `dist generate` (actions pinned by SHA, installer checked by SHA-256,
-write rights only for `host`/`announce`); keep that when regenerating. Snap packaging `packaging/snap/`, winget
+write rights only for `host`/`announce`, `CODESIGN_*` only for the Apple builds); keep that when regenerating.
+macOS binaries are signed with the Developer ID (`macos-sign`, secrets `CODESIGN_*`, renew before 2027-12-18). Snap packaging `packaging/snap/`, winget
 manifests `packaging/winget/`.
