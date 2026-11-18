@@ -29,6 +29,8 @@ async fn sensors_list_table_and_json() {
     Mock::given(method("GET"))
         .and(path("/api/sensors"))
         .and(header("authorization", "Bearer eyJ.fake.access"))
+        // Without it the API hides virtual, MQTT and push sensors (DATA_POINTS.md §2).
+        .and(header("x-hydronode-capabilities", "data1"))
         .respond_with(ResponseTemplate::new(200).set_body_json(sensors_body()))
         .mount(&server)
         .await;

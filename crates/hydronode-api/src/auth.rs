@@ -22,10 +22,17 @@ use crate::{Error, Result};
 pub const CLIENT_ID: &str = "hydronode-cli";
 const DEVICE_GRANT: &str = "urn:ietf:params:oauth:grant-type:device_code";
 
-/// The HTTP client every request uses: rustls, no redirects, 30 s timeout.
+/// The HTTP client every request uses: rustls, no redirects, 30 s timeout. Announces the data
+/// platform (`data1`), so virtual, MQTT and push sensors are visible like in the web app.
 pub fn http_client() -> reqwest::Client {
+    let mut headers = reqwest::header::HeaderMap::new();
+    headers.insert(
+        "X-HydroNode-Capabilities",
+        reqwest::header::HeaderValue::from_static("data1"),
+    );
     reqwest::Client::builder()
         .user_agent(concat!("hydronode-cli/", env!("CARGO_PKG_VERSION")))
+        .default_headers(headers)
         .redirect(reqwest::redirect::Policy::none())
         .timeout(Duration::from_secs(30))
         .connect_timeout(Duration::from_secs(10))
