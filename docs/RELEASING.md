@@ -9,7 +9,7 @@ Homebrew tap `TexhFexLabs/homebrew-tap`, winget `TexhFexLabs.HydroNode`, Snap `h
 |---|---|---|
 | GitHub Releases | archives, `.sha256`, build attestations | `release.yml` (dist) |
 | Homebrew | tap `TexhFexLabs/homebrew-tap`, formula `hydronode` | secret `HOMEBREW_TAP_TOKEN` (fine-grained PAT, contents write on the tap only, renew yearly) |
-| Snap | name `hydronode` registered, channel `stable` | secret `SNAPCRAFT_STORE_CREDENTIALS` (`snapcraft export-login --snaps=hydronode --acls=package_access,package_push,package_update,package_release`, expires 2027-11-18), variable `SNAP_ENABLED=true` |
+| Snap | live since 0.1.0 (amd64 rev 1, arm64 rev 2), channel `stable` | secret `SNAPCRAFT_STORE_CREDENTIALS` (`snapcraft export-login --snaps=hydronode --acls=package_access,package_push,package_update,package_release`, expires 2027-11-18), variable `SNAP_ENABLED=true` |
 | winget | not yet | below |
 
 Snap renew (needs a terminal, it asks for the Ubuntu One login):

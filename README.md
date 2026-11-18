@@ -33,7 +33,7 @@ need test data. Tables for people, `--json` for scripts.
 | Shell installer (macOS, Linux) | `curl -LsSf https://github.com/TexhFexLabs/hydronode-cli/releases/latest/download/hydronode-cli-installer.sh \| sh` |
 | winget (Windows 10/11) | `winget install TexhFexLabs.HydroNode` (coming soon) |
 | PowerShell installer (Windows) | `powershell -c "irm https://github.com/TexhFexLabs/hydronode-cli/releases/latest/download/hydronode-cli-installer.ps1 \| iex"` |
-| Snap (Linux) | `sudo snap install hydronode` (coming soon; the command is `hydronode`, `sudo snap alias hydronode.hn hn` adds `hn`) |
+| Snap (Linux) | `sudo snap install hydronode` (the command is `hydronode`; `sudo snap alias hydronode.hn hn` adds `hn`) |
 | Download | archives for every system on [GitHub Releases](https://github.com/TexhFexLabs/hydronode-cli/releases), with `.sha256` and build provenance (`gh attestation verify <file> -R TexhFexLabs/hydronode-cli`) |
 | From source | `git clone https://github.com/TexhFexLabs/hydronode-cli && cargo install --path hydronode-cli/crates/hydronode-cli` |
 
