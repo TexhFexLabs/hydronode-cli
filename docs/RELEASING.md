@@ -12,7 +12,13 @@ Homebrew tap `TexhFexLabs/homebrew-tap`, winget `TexhFexLabs.HydroNode`, Snap `h
 | Snap | name `hydronode` registered, channel `stable` | secret `SNAPCRAFT_STORE_CREDENTIALS` (`snapcraft export-login --snaps=hydronode --acls=package_access,package_push,package_update,package_release`, expires 2027-11-18), variable `SNAP_ENABLED=true` |
 | winget | not yet | below |
 
-Snap renew: `snapcraft login`, run the `export-login` line again into the secret. `hn` as a short command needs
+Snap renew (needs a terminal, it asks for the Ubuntu One login):
+
+```bash
+snapcraft export-login --snaps=hydronode --channels=stable,candidate,beta,edge \
+  --acls=package_access,package_push,package_update,package_release --expires=<date> ~/snap-creds.txt
+gh secret set SNAPCRAFT_STORE_CREDENTIALS -R TexhFexLabs/hydronode-cli < ~/snap-creds.txt && rm ~/snap-creds.txt
+``` `hn` as a short command needs
 the store's auto-alias: ask on forum.snapcraft.io (category store-requests), until then
 `sudo snap alias hydronode.hn hn`. The plug `password-manager-service` is not connected automatically;
 without it the CLI keeps tokens in its private file (0600): `sudo snap connect hydronode:password-manager-service`.
