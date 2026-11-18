@@ -53,12 +53,12 @@ impl Ctx {
         Ok(Client::new(self.server()?, &self.profile, self.store()))
     }
 
-    /// `hn` or `hn -p work`, for hints.
+    /// `hn`/`hydronode`, with `-p work` for another profile, for hints.
     pub fn hn(&self) -> String {
         if self.profile == "default" {
-            "hn".into()
+            self.bin.clone()
         } else {
-            format!("hn -p {}", self.profile)
+            format!("{} -p {}", self.bin, self.profile)
         }
     }
 }

@@ -23,7 +23,7 @@ values, switches outputs, sends commands, updates firmware over the air and fake
 need test data. Tables for people, `--json` for scripts.
 
 <!-- Demo GIFs are rendered from docs/demo/*.tape with vhs (https://github.com/charmbracelet/vhs). -->
-<!-- <p align="center"><img src="docs/demo/quickstart.gif" alt="hn login, hn status, hn values" width="720"></p> -->
+<!-- <p align="center"><img src="docs/demo/quickstart.gif" alt="hydronode login, status and values" width="720"></p> -->
 
 ## Install
 
@@ -37,21 +37,22 @@ need test data. Tables for people, `--json` for scripts.
 | Download | archives for every system on [GitHub Releases](https://github.com/TexhFexLabs/hydronode-cli/releases), with `.sha256` and build provenance (`gh attestation verify <file> -R TexhFexLabs/hydronode-cli`) |
 | From source | `git clone https://github.com/TexhFexLabs/hydronode-cli && cargo install --path hydronode-cli/crates/hydronode-cli` |
 
-Every way installs two names for the same program: `hydronode` (clear in scripts) and `hn` (short at
-the prompt). Binaries: macOS (Apple silicon, Intel), Linux (x86_64, arm64, static musl), Windows x86_64.
+The command is `hydronode`. Homebrew, the install scripts and winget also install `hn`, a short name for
+the same program; on Snap add it with `sudo snap alias hydronode.hn hn`. Binaries: macOS (Apple silicon,
+Intel), Linux (x86_64, arm64, static musl), Windows x86_64.
 
 ## Quickstart
 
 ```console
-$ hn login                      # pick browser, device code or API token
-$ hn status                     # devices, anomalies, messages at a glance
-$ hn sensors                    # your sensors with their last value
-$ hn values <sensor-id>/temperature --from 7d
-$ hn watch                      # live values, q quits
+$ hydronode login    # pick browser, device code or API token
+$ hydronode status   # devices, anomalies, messages at a glance
+$ hydronode sensors  # your sensors with their last value
+$ hydronode values <sensor-id>/temperature --from 7d
+$ hydronode watch    # live values, q quits
 ```
 
-Over SSH or without a browser: `hn login --device` shows a code you confirm on your phone.
-In CI: `echo "$HYDRONODE_TOKEN" | hn login --with-token` with an API token.
+Over SSH or without a browser: `hydronode login --device` shows a code you confirm on your phone.
+In CI: `echo "$HYDRONODE_TOKEN" | hydronode login --with-token` with an API token.
 
 ## Commands
 
@@ -74,7 +75,7 @@ In CI: `echo "$HYDRONODE_TOKEN" | hn login --with-token` with an API token.
 | | `config`, `profile` | Settings; servers and their logins (`-p work`) |
 | | `completion`, `open` | Shell completion; open the web app |
 
-`hn help <command>` (same as `hn <command> --help`) explains each command with examples.
+`hydronode help <command>` (same as `hydronode <command> --help`) explains each command with examples.
 
 ## Scripts
 
@@ -87,8 +88,8 @@ In CI: `echo "$HYDRONODE_TOKEN" | hn login --with-token` with an API token.
 - `NO_COLOR=1` turns colors off; colors are only used on a terminal anyway.
 
 ```sh
-hn sensors --json | jq -r '.[] | select(.monitoring.status == "OFFLINE") | .name'
-hn values "$SENSOR/soil_moisture" --below 30 --from 7d --json | jq .totalMinutes
+hydronode sensors --json | jq -r '.[] | select(.monitoring.status == "OFFLINE") | .name'
+hydronode values "$SENSOR/soil_moisture" --below 30 --from 7d --json | jq .totalMinutes
 ```
 
 ## Profiles
@@ -96,9 +97,9 @@ hn values "$SENSOR/soil_moisture" --below 30 --from 7d --json | jq .totalMinutes
 A profile is a server plus its own login. `default` points to `https://hydronode.tech`.
 
 ```console
-$ hn profile add work --server https://hydronode.tech
-$ hn -p work login
-$ hn profile use work           # or HYDRONODE_PROFILE=work
+$ hydronode profile add work --server https://hydronode.tech
+$ hydronode -p work login
+$ hydronode profile use work  # or HYDRONODE_PROFILE=work
 ```
 
 Settings live in `~/.config/hydronode/config.toml` (Windows: `%APPDATA%\hydronode`), never a token.
@@ -106,18 +107,18 @@ Settings live in `~/.config/hydronode/config.toml` (Windows: `%APPDATA%\hydronod
 
 ## Security
 
-- **Login like the web app.** `hn login --web` uses OAuth 2.1 authorization code with PKCE (S256) and a
+- **Login like the web app.** `hydronode login --web` uses OAuth 2.1 authorization code with PKCE (S256) and a
   one-time redirect to `127.0.0.1` on a random port; the `state` is checked before any code is exchanged.
   `--device` uses the device authorization grant. Both end on HydroNode's consent page and give a normal
   session you can see and end under Sessions & security ("HydroNode CLI").
 - **Tokens in the keychain.** macOS Keychain, Windows Credential Manager, Secret Service on Linux. Without
   one the CLI warns and keeps them in a file only you can read (`credentials.json`, mode 0600).
 - **One refresh at a time.** Refreshing happens under a lock file per profile and reads the stored login
-  again after taking it, so two `hn` processes never use the same refresh token twice (that would end the
+  again after taking it, so two CLI processes never use the same refresh token twice (that would end the
   session everywhere).
 - **HTTPS only**, with rustls. Plain `http://` only for `localhost` and `127.0.0.1`.
 - **No secrets in output.** Tokens are never printed or logged. Exceptions you ask for explicitly:
-  `hn sensors credentials` (device secret, owner only) and `hn tokens create` (shown once).
+  `hydronode sensors credentials` (device secret, owner only) and `hydronode tokens create` (shown once).
 - **Read-only tokens stay read-only.** With an `hrt_` token, commands that change something stop before
   any request and say which login they need.
 
@@ -127,13 +128,13 @@ Report vulnerabilities as described in [SECURITY.md](SECURITY.md).
 
 | Problem | Fix |
 |---|---|
-| `error: not logged in` | `hn login`, or `hn -p <profile> login` for another profile |
-| `your session has ended` | The session was signed out (web, other device). `hn login` again |
-| Browser does not open | Copy the printed link, or use `hn login --device` |
+| `error: not logged in` | `hydronode login`, or `hydronode -p <profile> login` for another profile |
+| `your session has ended` | The session was signed out (web, other device). `hydronode login` again |
+| Browser does not open | Copy the printed link, or use `hydronode login --device` |
 | `warning: no usable system keychain` | Linux without Secret Service: tokens go to a 0600 file. Install `gnome-keyring` or `kwallet` for the keychain |
 | `plain http is not allowed` | Use `https://`, or `localhost` for a local server |
-| `This needs a full login` | You use a read-only token. `hn login` with the browser or a full `hat_` token |
-| `hn watch` exits with code 3 | Live values need a browser or device login; API tokens cannot open the live socket |
+| `This needs a full login` | You use a read-only token. `hydronode login` with the browser or a full `hat_` token |
+| `hydronode watch` exits with code 3 | Live values need a browser or device login; API tokens cannot open the live socket |
 | Strange output in pipes | Use `--json`; tables are for people |
 
 ## Development

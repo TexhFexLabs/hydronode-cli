@@ -12,7 +12,8 @@ use std::ffi::OsString;
 use clap::FromArgMatches;
 use hydronode_api::Error;
 
-/// `hydronode` or `hn`, from how the program was started.
+/// `hydronode` or `hn`, from how the program was started (`hydronode.hn` from the Snap counts as
+/// `hydronode`: that is the command Snap users type).
 pub fn bin_name(argv0: Option<&OsString>) -> String {
     let stem = argv0
         .and_then(|a| {
@@ -21,8 +22,8 @@ pub fn bin_name(argv0: Option<&OsString>) -> String {
                 .map(|s| s.to_string_lossy().to_string())
         })
         .unwrap_or_default();
-    if stem == "hydronode" {
-        stem
+    if stem.starts_with("hydronode") {
+        "hydronode".into()
     } else {
         "hn".into()
     }
@@ -74,8 +75,9 @@ pub fn print_error(e: &Error, json: bool) {
         eprintln!("{}", serde_json::to_string_pretty(&v).unwrap_or_default());
         return;
     }
-    eprintln!("error: {e}");
+    let bin = bin_name(std::env::args_os().next().as_ref());
+    eprintln!("error: {}", cli::as_bin(&e.to_string(), &bin));
     if let Some(h) = e.hint() {
-        eprintln!("hint: {h}");
+        eprintln!("hint: {}", cli::as_bin(&h, &bin));
     }
 }

@@ -260,7 +260,8 @@ fn show(ctx: &Ctx, v: &Value) {
         .to_lowercase();
     out.line("");
     out.line(&out.dim(&format!(
-        "History: hn values {id}/{example} --from 7d. Writable points: hn set {id}/<type> <value>."
+        "History: {bin} values {id}/{example} --from 7d. Writable points: {bin} set {id}/<type> <value>.",
+        bin = ctx.hn()
     )));
 }
 

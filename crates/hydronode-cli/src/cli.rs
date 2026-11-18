@@ -985,9 +985,40 @@ pub fn command(bin: &str) -> clap::Command {
         .get_subcommands()
         .map(|s| s.get_name().to_string())
         .collect();
-    names
+    let cmd = names
         .iter()
-        .fold(cmd, |cmd, name| cmd.mut_subcommand(name, tidy))
+        .fold(cmd, |cmd, name| cmd.mut_subcommand(name, tidy));
+    rename(cmd, bin)
+}
+
+/// Example and hint text is written with `hn`; show the name the program was started with.
+pub fn as_bin(text: &str, bin: &str) -> String {
+    if bin == "hn" {
+        return text.to_string();
+    }
+    text.replace("'hn ", &format!("'{bin} "))
+        .replace("`hn ", &format!("`{bin} "))
+        .replace("\n  hn ", &format!("\n  {bin} "))
+        .replace("\nhn ", &format!("\n{bin} "))
+}
+
+fn rename(cmd: clap::Command, bin: &str) -> clap::Command {
+    let after = cmd.get_after_help().map(|t| as_bin(&t.to_string(), bin));
+    let before = cmd.get_before_help().map(|t| as_bin(&t.to_string(), bin));
+    let mut cmd = cmd;
+    if let Some(t) = after {
+        cmd = cmd.after_help(t);
+    }
+    if let Some(t) = before {
+        cmd = cmd.before_help(t);
+    }
+    let names: Vec<String> = cmd
+        .get_subcommands()
+        .map(|s| s.get_name().to_string())
+        .collect();
+    names.iter().fold(cmd, |cmd, name| {
+        cmd.mut_subcommand(name, |sub| rename(sub, bin))
+    })
 }
 
 /// Subcommand pages: purpose (long text) first, then arguments and options, then examples.
@@ -1017,5 +1048,22 @@ mod tests {
     #[test]
     fn definition_is_consistent() {
         super::command("hn").debug_assert();
+    }
+
+    #[test]
+    fn examples_use_the_name_the_program_was_started_with() {
+        let mut cmd = super::command("hydronode");
+        let help = cmd
+            .find_subcommand_mut("profile")
+            .unwrap()
+            .render_help()
+            .to_string();
+        assert!(help.contains("  hydronode profile add work"), "{help}");
+        assert!(!help.contains("  hn "), "{help}");
+        assert_eq!(
+            super::as_bin("run 'hn login'", "hydronode"),
+            "run 'hydronode login'"
+        );
+        assert_eq!(super::as_bin("run 'hn login'", "hn"), "run 'hn login'");
     }
 }

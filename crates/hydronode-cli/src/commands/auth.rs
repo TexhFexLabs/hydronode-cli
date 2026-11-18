@@ -167,8 +167,10 @@ pub async fn logout(ctx: &Ctx) -> Result<()> {
         ctx.out
             .line(&format!("Not signed in (profile {}).", ctx.profile));
     } else if was_pat {
-        ctx.out
-            .line("Forgot the API token. It still works until you revoke it ('hn tokens revoke').");
+        ctx.out.line(&format!(
+            "Forgot the API token. It still works until you revoke it ('{} tokens revoke').",
+            ctx.bin
+        ));
     } else {
         ctx.out.line("Signed out.");
     }

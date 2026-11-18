@@ -179,11 +179,13 @@ pub fn profile(ctx: &mut Ctx, args: ProfileArgs) -> Result<()> {
             if moved {
                 ctx.store().delete(&name)?;
                 ctx.out.line(&format!(
-                    "Profile {name} → {server}, signed out of the old server. Sign in with 'hn -p {name} login'."
+                    "Profile {name} → {server}, signed out of the old server. Sign in with '{} -p {name} login'.",
+                    ctx.bin
                 ));
             } else {
                 ctx.out.line(&format!(
-                    "Profile {name} → {server}. Sign in with 'hn -p {name} login'."
+                    "Profile {name} → {server}. Sign in with '{} -p {name} login'.",
+                    ctx.bin
                 ));
             }
         }
