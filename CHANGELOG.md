@@ -4,7 +4,7 @@ All notable changes to this project are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versions follow
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.1.0] - 2026-11-18
 
 ### Added
 
@@ -16,3 +16,5 @@ All notable changes to this project are listed here. The format follows
   push, simulate, anomalies, messages, stations, automations, tokens, sessions, api, config, profile,
   completion, open.
 - `--json` everywhere, exit codes 0 to 4, errors with a hint.
+
+[0.1.0]: https://github.com/TexhFexLabs/hydronode-cli/releases/tag/v0.1.0
