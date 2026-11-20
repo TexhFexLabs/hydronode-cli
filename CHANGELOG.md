@@ -4,6 +4,14 @@ All notable changes to this project are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.1.2] - 2026-11-20
+
+### Changed
+
+- macOS binaries are signed with the Developer ID, so the keychain keeps "Always allow" across updates.
+- Device login opens the sign-in page in the browser again, without the code in the link. You type the
+  code shown in the terminal, which proves the login was started here.
+
 ## [0.1.1] - 2026-11-18
 
 ### Added
@@ -39,5 +47,6 @@ All notable changes to this project are listed here. The format follows
   completion, open.
 - `--json` everywhere, exit codes 0 to 4, errors with a hint.
 
+[0.1.2]: https://github.com/TexhFexLabs/hydronode-cli/releases/tag/v0.1.2
 [0.1.1]: https://github.com/TexhFexLabs/hydronode-cli/releases/tag/v0.1.1
 [0.1.0]: https://github.com/TexhFexLabs/hydronode-cli/releases/tag/v0.1.0
