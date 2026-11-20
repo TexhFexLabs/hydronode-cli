@@ -45,13 +45,14 @@ fn same_origin(link: &str, server: &url::Url) -> bool {
 }
 
 impl DeviceEvents for Device {
-    fn show_code(&self, user_code: &str, uri: &str, complete: Option<&str>) {
+    fn show_code(&self, user_code: &str, uri: &str, _complete: Option<&str>) {
         eprintln!("Your one-time code: {user_code}");
         eprintln!("Open {uri} on any device, sign in and enter the code.");
-        if let (Some(link), false) = (complete, self.no_browser) {
-            if same_origin(link, &self.server) {
-                let _ = open::that_detached(link);
-            }
+        // Opens the plain page, never a link with the code in it: the server no longer sends one
+        // (a prefilled code made device-code phishing a one-click affair), and typing the code is
+        // the check that this terminal is yours.
+        if !self.no_browser && same_origin(uri, &self.server) {
+            let _ = open::that_detached(uri);
         }
         eprintln!("Waiting for confirmation …");
     }
