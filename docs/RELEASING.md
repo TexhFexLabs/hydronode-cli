@@ -8,6 +8,7 @@ Homebrew tap `TexhFexLabs/homebrew-tap`, winget `TexhFexLabs.HydroNode`, Snap `h
 | Channel | State | Where |
 |---|---|---|
 | GitHub Releases | archives, `.sha256`, build attestations | `release.yml` (dist) |
+| Install scripts | `https://hydronode.tech/install.sh` and `/install.ps1` | Cloudflare redirect rules (zone `hydronode.tech`, phase `http_request_dynamic_redirect`, 302) to `releases/latest/download/hydronode-cli-installer.sh` / `.ps1`. Renaming the installer assets breaks them |
 | Homebrew | tap `TexhFexLabs/homebrew-tap`, formula `hydronode` | secret `HOMEBREW_TAP_TOKEN` (fine-grained PAT, contents write on the tap only, expires 2027-11-19) |
 | Snap | live since 0.1.0 (amd64 rev 1, arm64 rev 2), channel `stable` | secret `SNAPCRAFT_STORE_CREDENTIALS` (`snapcraft export-login --snaps=hydronode --acls=package_access,package_push,package_update,package_release`, expires 2027-11-18), variable `SNAP_ENABLED=true` |
 | macOS signing | Developer ID Application, from 0.1.2 | secrets `CODESIGN_CERTIFICATE` (base64 .p12), `CODESIGN_CERTIFICATE_PASSWORD`, `CODESIGN_IDENTITY` (`Developer ID Application: … (TEAM)`); `macos-sign = true` in `dist-workspace.toml`, hardened runtime. Certificate valid until 2027-12-18 |

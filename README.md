@@ -36,16 +36,16 @@ need test data. Tables for people, `--json` for scripts.
 | Way | Command |
 |---|---|
 | Homebrew (macOS, Linux) | `brew install texhfexlabs/tap/hydronode` |
-| Shell installer (macOS, Linux) | `curl -LsSf https://github.com/TexhFexLabs/hydronode-cli/releases/latest/download/hydronode-cli-installer.sh \| sh` |
+| Shell installer (macOS, Linux) | `curl -LsSf https://hydronode.tech/install.sh \| sh` |
 | winget (Windows 10/11) | `winget install TexhFexLabs.HydroNode` (coming soon) |
-| PowerShell installer (Windows) | `powershell -c "irm https://github.com/TexhFexLabs/hydronode-cli/releases/latest/download/hydronode-cli-installer.ps1 \| iex"` |
-| Snap (Linux) | `sudo snap install hydronode` (the command is `hydronode`; `sudo snap alias hydronode.hn hn` adds `hn`) |
+| PowerShell installer (Windows) | `powershell -c "irm https://hydronode.tech/install.ps1 \| iex"` |
+| Snap (Linux) | `sudo snap install hydronode` |
 | Download | archives for every system on [GitHub Releases](https://github.com/TexhFexLabs/hydronode-cli/releases), with `.sha256` and build provenance (`gh attestation verify <file> -R TexhFexLabs/hydronode-cli`) |
 | From source | `git clone https://github.com/TexhFexLabs/hydronode-cli && cargo install --path hydronode-cli/crates/hydronode-cli` |
 
-The command is `hydronode`. Homebrew, the install scripts and winget also install `hn`, a short name for
-the same program; on Snap add it with `sudo snap alias hydronode.hn hn`. Binaries: macOS (Apple silicon,
-Intel), Linux (x86_64, arm64, static musl), Windows x86_64.
+The command is `hydronode`. `hydronode.tech/install.sh` and `install.ps1` redirect to the installers of the
+latest release on GitHub (`https://github.com/TexhFexLabs/hydronode-cli/releases/latest/download/hydronode-cli-installer.sh`, `.ps1`). Binaries: macOS (Apple silicon, Intel),
+Linux (x86_64, arm64, static musl), Windows x86_64.
 
 ## Quickstart
 
